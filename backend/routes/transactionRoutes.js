@@ -176,31 +176,18 @@ router.get('/transactions/chart-data', async (req, res) => {
     const [expensesResults] = await promisePool.query(queryExpenses);
     const [incomeResults] = await promisePool.query(queryIncome);
 
-    // Format data for Chart.js
-    const labels = [];
-    const expenses = [];
-    const income = [];
+    const labels = Array.from(new Set([
+      ...expensesResults.map(row => row.date),
+      ...incomeResults.map(row => row.date)
+    ])).sort();
 
-    expensesResults.forEach((row) => {
-      labels.push(row.date);
-      expenses.push(row.total);
-    });
-
-    incomeResults.forEach((row) => {
-      if (!labels.includes(row.date)) {
-        labels.push(row.date);
-      }
-      income.push(row.total);
-    });
-
-    // Align expenses and income data with labels
-    const expenseData = labels.map((label) => {
-      const item = expensesResults.find((row) => row.date === label);
+    const expenseData = labels.map(label => {
+      const item = expensesResults.find(row => row.date === label);
       return item ? item.total : 0;
     });
 
-    const incomeData = labels.map((label) => {
-      const item = incomeResults.find((row) => row.date === label);
+    const incomeData = labels.map(label => {
+      const item = incomeResults.find(row => row.date === label);
       return item ? item.total : 0;
     });
 
@@ -210,6 +197,38 @@ router.get('/transactions/chart-data', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+router.get('/transactions/report', async (req, res) => {
+  const user_id = req.query.user_id; // Get user_id from query parameters
+
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
+
+  try {
+    const [rows] = await promisePool.query(`
+      SELECT 
+        DATE_FORMAT(created_at, '%Y-%m-%d') AS date, 
+        category, 
+        CASE 
+          WHEN type = 'income' THEN CONCAT('₹', FORMAT(amount, 2)) 
+          WHEN type = 'expense' THEN CONCAT('-₹', FORMAT(amount, 2)) 
+        END AS amount
+      FROM transactions
+      WHERE user_id = ?
+      ORDER BY created_at DESC  LIMIT 3
+    `, [user_id]);
+
+    res.send(rows); // Send the detailed report data
+  } catch (error) {
+    console.error('Error fetching detailed report:', error);
+    res.status(500).send({ error: 'Error fetching detailed report.' });
+  }
+});
+
+
+
 
 // Delete a transaction
 router.delete('/transactions/:id', async (req, res) => {

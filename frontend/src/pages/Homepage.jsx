@@ -4,6 +4,7 @@ import { UserContext } from "../Utils/userContext";
 import axios from "axios";
 import RecentTransaction from "./RecentTransactions";
 import axiosInstance from "../Utils/axios";
+import UpcomingTransaction from "./UpcomingTransactions";
 
 const Homepage = () => {
   const [weather, setWeather] = useState({});
@@ -12,7 +13,7 @@ const Homepage = () => {
   const [minutes, setMinutes] = useState("");
   const [totalIncome, setTotalIncome] = useState("");
   const [totalExpense, setTotalExpense] = useState("");
-  const [total, setTotal] = useState("");
+  const [total, setTotal] = useState(0);
   const [netBalance, setNetBalance] = useState("");
 
   const { userdata } = useContext(UserContext);
@@ -134,15 +135,10 @@ const Homepage = () => {
               </div>
             </div>
           </section>
+         
           <RecentTransaction />
-          <section className="mt-6">
-            <h3 className="text-xl font-semibold">Upcoming Transactions</h3>
-            <div className="p-6 rounded-lg mt-2 shadow-md">
-              <div className="h-4 bg-black rounded mb-4"></div>
-              <div className="h-4 bg-black rounded mb-4"></div>
-              <div className="h-4 bg-black rounded"></div>
-            </div>
-          </section>
+     
+          <UpcomingTransaction/>
         </main>
       </div>
     </div>

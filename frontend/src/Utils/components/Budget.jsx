@@ -120,7 +120,7 @@ const Budget = () => {
             <button
               type="button"
               onClick={() => handleTransaction("income")}
-              className="bg-blue-600 py-2 px-4 rounded capitalize"
+              className="bg-green-600 py-2 px-4 rounded capitalize"
             >
               Income
             </button>
@@ -158,7 +158,7 @@ const Budget = () => {
           console.error("Transaction ID is undefined");
         }
       }}
-      className="bg-gray-500 py-1 px-2 rounded"
+      className="bg-red-500 py-1 px-2 rounded"
     >
       Delete
     </button>

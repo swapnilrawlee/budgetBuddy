@@ -32,6 +32,11 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
+            <Link to="/transactionremind" className={`block py-2 text-center text-lg ${isActive('/transactionremind')}`}>
+              TransactionsReminder
+            </Link>
+          </li>
+          <li>
             <Link to="/goals" className={`block py-2 text-center text-lg ${isActive('/goals')}`}>
               Goals
             </Link>
@@ -56,11 +61,12 @@ const Navbar = () => {
               Userprofile
             </Link>
           </li>
+      
         </ul>
-      </nav>
-      <button  onClick={logoutHandler} className="block mt-6 text-center bg-white p-2 rounded-3xl text-red-800 font-semibold text-lg">
+      <button  onClick={logoutHandler} className="mt-6 block py-2 text-center w-full bg-red-500  rounded-3xl text-black font-semibold text-lg">
         Logout
       </button >
+      </nav>
     </aside>
   )
 }

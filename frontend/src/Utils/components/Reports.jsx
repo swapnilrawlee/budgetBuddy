@@ -8,6 +8,7 @@ const Reports = () => {
   const [total, setTotal] = useState(0);
   const [netBalance, setNetBalance] = useState(0);
   const [chartData, setChartData] = useState({ labels: [], expenses: [], income: [] });
+  const [report, setReport] = useState([]);
 
   const handleTransaction = async () => {
     const user_id = localStorage.getItem('user_id');
@@ -45,8 +46,23 @@ const Reports = () => {
 
   const fetchChartData = async () => {
     try {
-      const response = await axiosInstance.get('/transactionapi/transactions/chart-data');
+      const user_id = localStorage.getItem('user_id');
+
+      const response = await axiosInstance.get('/transactionapi/transactions/chart-data',{
+        params: {user_id}
+      });
       setChartData(response.data);
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+    }
+  };
+  const fetchreport = async () => {
+    try {
+      const user_id = localStorage.getItem('user_id');
+      const response = await axiosInstance.get('/transactionapi/transactions/report',{
+        params: {user_id}
+      });
+      setReport(response.data);
     } catch (error) {
       console.error('Error fetching chart data:', error);
     }
@@ -57,6 +73,7 @@ const Reports = () => {
     handleTotal();
     handleNetBalance();
     fetchChartData();
+    fetchreport();
   }, []);
 
   return (
@@ -111,28 +128,22 @@ const Reports = () => {
                 <th className="p-2 border-b">Date</th>
                 <th className="p-2 border-b">Category</th>
                 <th className="p-2 border-b">Amount</th>
+             
               </tr>
             </thead>
             <tbody>
-              {/* Example rows, replace with dynamic data */}
-              <tr className="hover:bg-muted">
-                <td className="p-2 border-b">2022-01-01</td>
-                <td className="p-2 border-b">Income</td>
-                <td className="p-2 border-b">₹2,000</td>
-              </tr>
-              <tr className="hover:bg-muted">
-                <td className="p-2 border-b">2022-01-05</td>
-                <td className="p-2 border-b">Expenses</td>
-                <td className="p-2 border-b">-₹500</td>
-              </tr>
+            {report.map((elem, index) => (
+          <tr key={index} className="hover:bg-muted">
+            <td className="p-2 border-b">{elem.date}</td>
+            <td className="p-2 border-b">{elem.category}</td>
+            <td className="p-2 border-b">{elem.amount}</td>
+          </tr>
+        ))}
             </tbody>
           </table>
         </div>
 
         {/* Visualizations */}
-        <div className='bg-card p-6 rounded-lg mb-6 shadow-lg'>
-          <h2 className='text-xl font-semibold mb-4 text-secondary'>Visualizations</h2>
-        </div>
 
         {/* Export Options */}
         <div className="bg-card p-6 rounded-lg mb-6 shadow-lg">

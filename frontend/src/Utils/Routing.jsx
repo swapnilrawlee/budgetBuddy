@@ -12,6 +12,8 @@ import Helppage from './components/Help.jsx';
 import Userprofile from "./components/Userprofile.jsx";
 import { UserContext } from "./userContext.js";
 import FinancialGoalForm from "./components/FinancialGoalForm.jsx";
+import TransactionRemind from "./components/TransactionRemind.jsx";
+import TransactionReminder from "./components/TransactionReminder.jsx";
 
 const Routing = () => {
   const [userdata ,setUserdata] =useState("null")
@@ -23,6 +25,8 @@ const Routing = () => {
       <Route path="/register" element={<Registerpage />} />
       <Route path="/home" element={<Homepage/>} />
       <Route path="/transactions" element={<Transactionspage/>} />
+      <Route path="/transactionremind" element={<TransactionRemind/>} />
+      <Route path="/transactionreminder" element={<TransactionReminder/>} />
       <Route path="/budget" element={<Budgetpage/>} />
       <Route path="/goals" element={<Goalspage/>} />
       <Route path="/reports" element={<Reportspage/>} />
