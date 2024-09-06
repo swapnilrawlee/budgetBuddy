@@ -10,33 +10,33 @@ const ImageCompo = () => {
          <img
         src={login2}
         alt=""
-        className="absolute w-[200px] object-cover top-[-10%] right-[10%] rounded-full"
+        className="absolute w-[150px] object-cover top-[-10%] right-[10%] rounded-full"
       />
       <img
         src={login3}
         alt=""
-        className="absolute w-[200px] object-cover top-[60%] right-[10%] rounded-full"
+        className="absolute w-[150px] object-cover top-[60%] right-[10%] rounded-full"
       />
    
         <img
           src={login4}
           alt=""
-          className="absolute w-[200px] object-cover top-[36%] right-[10%] rounded-full"
+          className="absolute w-[150px] object-cover top-[36%] right-[10%] rounded-full"
         />
       <img
         src={login}
         alt=""
-        className="absolute w-[200px] object-cover top-[30%] right-[25%] rounded-full"
+        className="absolute w-[150px] object-cover top-[30%] right-[25%] rounded-full"
       />
       <img
         src={login3}
         alt=""
-        className="absolute w-[200px] object-cover top-[-20%] right-[25%] rounded-full"
+        className="absolute w-[150px] object-cover top-[-20%] right-[25%] rounded-full"
       />
          <img
         src={login4}
         alt=""
-        className="absolute w-[200px] object-cover top-[78%] right-[25%] rounded-full"
+        className="absolute w-[150px] object-cover top-[78%] right-[25%] rounded-full"
       />
     </>
   )

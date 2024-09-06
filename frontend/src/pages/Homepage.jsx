@@ -1,15 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { UserContext } from "../Utils/userContext";
+import axios from "axios";
+import RecentTransaction from "./RecentTransactions";
+import axiosInstance from "../Utils/axios";
 
 const Homepage = () => {
+  const [weather, setWeather] = useState({});
   const [greet, setGreet] = useState("");
-  const {userdata }=useContext(UserContext)
-  console.log(userdata);
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [totalIncome, setTotalIncome] = useState("");
+  const [totalExpense, setTotalExpense] = useState("");
+  const [total, setTotal] = useState("");
+  const [netBalance, setNetBalance] = useState("");
+
+  const { userdata } = useContext(UserContext);
 
   const handleClick = () => {
     const currentDate = new Date();
     const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
     let timeOfDay;
     if (hours < 12) {
       timeOfDay = "Morning";
@@ -20,45 +31,119 @@ const Homepage = () => {
     } else {
       timeOfDay = "Night";
     }
-
+    setHours(hours);
+    setMinutes(minutes);
     setGreet(timeOfDay);
+  };
+
+  const WeatherApi = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.openweathermap.org/data/2.5/weather?q=mumbai&appid=1284ea18df9d31cafd3165c6b33bebe6&units=metric"
+      );
+      setWeather(response.data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  };
+
+  const handletransaction = async () => {
+    const user_id = localStorage.getItem("user_id");
+
+    const response = await axiosInstance.get(
+      "/transactionapi/transactions/summary",
+      { params: { user_id } }
+    );
+
+    setTotalExpense(response.data.total_expenses);
+    setTotalIncome(response.data.total_income);
+  };
+
+  const handletotal = async () => {
+    try {
+      const user_id = localStorage.getItem("user_id");
+      const response = await axiosInstance.get(
+        "/transactionapi//transactions/total",
+        { params: { user_id } }
+      );
+      setTotal(response.data.total);
+    } catch (error) {
+      console.error("Error fetching transaction summary:", error);
+    }
+  };
+  const handlenetbalance = async () => {
+    try {
+      const user_id = localStorage.getItem("user_id");
+
+      const response = await axiosInstance.get(
+        "/transactionapi/transactions/net-balance",
+        { params: { user_id } }
+      );
+
+      setNetBalance(response.data.net_balance);
+    } catch (error) {
+      console.error("Error fetching transaction summary:", error);
+    }
   };
 
   useEffect(() => {
     handleClick();
-
+    WeatherApi();
   }, []);
 
+  useEffect(() => {
+    handletransaction();
+    handletotal();
+    handlenetbalance();
+  }, [totalIncome, totalExpense]);
+
   return (
-    <div className="w-screen h-screen  flex justify-between">
+    <div className="w-screen min-h-screen flex justify-between">
       <Navbar />
-      <div className="w-[78%] h-full p-6  rounded flex flex-col gap-6">
-        <div className="w-full h-1/5  rounded flex justify-center items-center">
-          <h1 className="   text-4xl p-8  capitalize">
-            Good {greet}, <span className="text-red-500">{userdata}</span>
-          </h1>
-        </div>
-        <div className="main flex flex-wrap w-full h-full gap-2 justify-center items-center">
-          <div className="left flex flex-col w-[40%] h-full gap-6">
-            <div className="w-full h-1/2 shadow-black shadow-lg flex flex-col border-2 border-black text-2xl justify-center items-center">
-              <p>Total Balance: 3000</p>
-              <p>Monthly Budget: 3333</p>
-              <p>Expenses Summary: 22222</p>
-              <p>Savings: 2222</p>
+      <div className="w-[75%] ml-[25%] h-full p-6 rounded flex flex-col gap-6">
+        <main className="flex-1 p-8">
+          <header className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-2xl font-semibold capitalize">{`Good ${greet}, ${userdata.name}!`}</h2>
+              <p className="text-lg text-muted-foreground">
+                {hours}:{minutes} {hours > 12 ? "pm" : "am"}
+              </p>
             </div>
-            <div className="w-full h-1/2 shadow-black shadow-lg rounded flex flex-col border-2 border-black text-2xl  items-center p-4">
-              <p>Recent Transactions:</p>
+            <div className="flex items-center">
+              <span className="mr-2 text-lg">
+                {weather?.name}, {weather?.sys?.country ?? "IN"}
+              </span>
+              <img
+                src={`https://openweathermap.org/img/wn/${weather?.weather?.[0]?.icon}@2x.png`}
+                alt="Weather Icon"
+                className="w-8 h-8"
+              />
+              <span className="ml-2 text-2xl font-bold">
+                {weather?.main?.temp ?? "--"}°C
+              </span>
             </div>
-          </div>
-          <div className="right flex flex-col w-[40%] h-full gap-6">
-            <div className="w-full h-1/2 shadow-black shadow-lg rounded flex flex-col border-2 border-black text-2xl items-center p-4">
-              <p>Spending Categories</p>
+          </header>
+          <section className="mt-6">
+            <div className="p-6 rounded-lg">
+              <h3 className="text-xl font-semibold">Total Balance</h3>
+              <div className="flex justify-between mt-4 text-lg">
+                <div className="font-medium">Total : ₹{total}</div>
+                <div className="font-medium">Expenses: ₹{totalExpense}</div>
+                <div className="font-medium">Income: ₹{totalIncome}</div>
+                <div className="font-medium">Net Balance : ₹{netBalance}</div>
+              </div>
             </div>
-            <div className="w-full h-1/2 shadow-black shadow-lg rounded flex flex-col border-2 border-black text-2xl  items-center p-4">
-              <p>Budget Progress</p>
+          </section>
+          <RecentTransaction />
+          <section className="mt-6">
+            <h3 className="text-xl font-semibold">Upcoming Transactions</h3>
+            <div className="p-6 rounded-lg mt-2 shadow-md">
+              <div className="h-4 bg-black rounded mb-4"></div>
+              <div className="h-4 bg-black rounded mb-4"></div>
+              <div className="h-4 bg-black rounded"></div>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
     </div>
   );

@@ -20,7 +20,9 @@ const {setUserdata} =useContext(UserContext)
     e.preventDefault()
     try {
      const response = await axiosInstance.post('/api/login',{email ,password})
-     setUserdata(response.data)
+     setUserdata(response.data.user)
+     localStorage.setItem('user_id',response.data.user.id);
+
 
       console.log(response)
       if(response.status===200){

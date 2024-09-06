@@ -1,85 +1,60 @@
-const userModel = require("../modules/userModel");
+const mysql2 = require('mysql2');
+const bcrypt = require('bcryptjs');
 
-const bcrypt = require("bcrypt");
+// Database connection (ensure this is set up properly in your project)
+const db = mysql2.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '123456',
+    database: 'budgetbuddy'
+});
 
-module.exports.signIn = async function (req, res) {
-  try {
+module.exports.register = async function (req, res) {
     const { name, email, password } = req.body;
 
-    // Validate input
-    if (!name || !email  || !password) {
-      return res.status(400).json({ msg: "All fields are required" });
+    if (!name || !email || !password) {
+        return res.status(400).json({ msg: 'All fields are required' });
+    } else {
+        db.query('SELECT * FROM users WHERE email =?', [email], async (err, result) => {
+            if (err) throw err;
+            if (result.length > 0) {
+                return res.status(400).json({ msg: 'Email already exists' });
+            } else {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                
+                db.query('INSERT INTO users (name, email, password) VALUES (?,?,?)', [name, email, hashedPassword], (err, result) => {
+                    if (err) throw err;
+                    console.log('User registered successfully.');
+                    res.status(200).json({ msg: 'User registered successfully' ,user:user });
+                });
+            }
+        });
     }
-
-    // Check if user already exists
-    let user = await userModel.findOne({ email });
-    if (user) return res.status(400).send({ msg: "User already exists" });
-
-    // Hash password and create user
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    user = await userModel.create({
-      name,
-      email,
-      password: hash,
-       
-    });
-
-    res.status(200).send({user});
-    console.log(`User created successfully`);
-  } catch (error) {
-    console.error("Error during registration:", error);
-    res.status(500).send({ message: "Internal server error" });
-  }
 };
 
-module.exports.login = async function (req, res) {
-  const { email, password } = req.body;
+module.exports.login = function (req, res) {
+    const { email, password } = req.body;
 
-  try {
-    // Validate input
-    if (!email || !password ) {
-      return res.status(400).send({ message: "All fields are required" });
+    if (!email || !password) {
+        return res.status(400).json({ msg: 'All fields are required' });
+    } else {
+        db.query('SELECT * FROM users WHERE email =?', [email], async (err, result) => {
+            if (err) throw err;
+            if (result.length === 0) {
+                return res.status(400).json({ msg: 'Invalid email or password' });
+            } else {
+                const user = result[0];
+                
+                // Compare the provided password with the hashed password
+                const isMatch = await bcrypt.compare(password, user.password);
+                
+                if (isMatch) {
+                    console.log('User logged in successfully.');
+                    res.status(200).json({ msg: 'Login successful' , user:user });
+                } else {
+                    return res.status(400).json({ msg: 'Invalid email or password' });
+                }
+            }
+        });
     }
-
-    let  user = await userModel.findOne({ email });
-     
-
-    if (!user) {
-      return res.status(401).send({ message: "Invalid loginId or password" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).send({ message: "Invalid loginId or password" });
-    }
-
-    res.status(200).send(`${user.name}`);
-    console.log(`User logged in successfully ${user.name}`);
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).send({ message: "Internal server error" });
-  }
 };
-
-// module.exports.users = async function (req, res) {
-//   try {
-//     const { user } = req.params; // Extract user identifier
-//     let foundUser;
-
-//     // Assuming you are able to query users regardless of role
-//     foundUser = await userModel.findOne({ name: user }) ||
-//                 await studentModels.findOne({ name: user }) ||
-//                 await teacherModels.findOne({ name: user });
-
-//     if (foundUser) {
-//       res.status(200).send(foundUser);
-//     } else {
-//       res.status(404).send({ message: "User not found" });
-//     }
-//   } catch (error) {
-//     console.error("Error during data fetch:", error);
-//     res.status(500).send({ message: "Internal server error" });
-//   }
-// };

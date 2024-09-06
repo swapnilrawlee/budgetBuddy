@@ -11,15 +11,16 @@ import Settingspage from './components/Settings.jsx';
 import Helppage from './components/Help.jsx';
 import Userprofile from "./components/Userprofile.jsx";
 import { UserContext } from "./userContext.js";
+import FinancialGoalForm from "./components/FinancialGoalForm.jsx";
 
 const Routing = () => {
-  const [userdata ,setUserdata] =useState()
+  const [userdata ,setUserdata] =useState("null")
   return (
     <UserContext.Provider value={{userdata ,setUserdata}}>
 
     <Routes>
+      <Route path="/" element={<Loginpage />} />
       <Route path="/register" element={<Registerpage />} />
-      <Route path="/login" element={<Loginpage />} />
       <Route path="/home" element={<Homepage/>} />
       <Route path="/transactions" element={<Transactionspage/>} />
       <Route path="/budget" element={<Budgetpage/>} />
@@ -28,6 +29,7 @@ const Routing = () => {
       <Route path="/settings" element={<Settingspage/>} />
       <Route path="/help" element={<Helppage/>} />
       <Route path="/userprofile" element={<Userprofile/>} />
+      <Route path="/newgoal" element={<FinancialGoalForm/>} />
     </Routes>
     </UserContext.Provider>
   );
