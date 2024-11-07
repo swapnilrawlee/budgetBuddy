@@ -3,11 +3,19 @@ const router = express.Router();
 const mysql = require('mysql2'); // Ensure mysql2 is installed and required
 
 // Create a MySQL connection pool
+// const pool = mysql.createPool({
+//     host: 'localhost',
+//     user: 'root', // Your MySQL username
+//     password: '123456', // Your MySQL password
+//     database: 'budgetbuddy' // Your database name
+// });
+
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root', // Your MySQL username
-    password: '123456', // Your MySQL password
-    database: 'budgetbuddy' // Your database name
+    host: 'sql12.freesqldatabase.com',
+    port: 3306,
+    user: 'sql12743346',      // Your database user
+    password: 'gNwUI3phXi',      // Your database password
+    database: 'sql12743346' // Your database name
 });
 
 // Helper function to query the database
@@ -25,7 +33,7 @@ router.post('/', async (req, res) => {
     try {
         const { user_id, transactionDate, name, amount } = req.body;
         console.log(req.body);
-        
+
 
         // Insert into the database
         const result = await queryDatabase(
@@ -75,7 +83,7 @@ router.get('/upcoming', async (req, res) => {
             'SELECT * FROM reminders WHERE user_id = ? AND created_at >= CURDATE() ORDER BY created_at ASC LIMIT 3',
             [user_id]
         );
-        
+
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'No upcoming transactions found' });
