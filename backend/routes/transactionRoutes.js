@@ -14,11 +14,11 @@ const mysql2 = require('mysql2');
 // });
 
 const pool = mysql2.createPool({
-  host: 'sql12.freesqldatabase.com',
-  port: 3306,
-  user: 'sql12743346',      // Your database user
-  password: 'gNwUI3phXi',      // Your database password
-  database: 'sql12743346' // Your database name
+  
+ host: process.env.DB_HOST,
+ user: process.env.DB_USER,
+ password: process.env.DB_PASSWORD,
+ database: process.env.DB_NAME,
 });
 
 const promisePool = pool.promise(); // To use promises with MySQL queries

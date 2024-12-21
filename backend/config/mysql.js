@@ -9,10 +9,10 @@ const mysql = require('mysql2');
 // });
 
 const pool = mysql.createPool({
-  host: 'sql105.infinityfree.com',
-  user: 'if0_37672388',      // Your database user
-  password: '9167534208',      // Your database password
-  database: 'if0_37672388_budgetbuddy_DB' // Your database name
+  host: process.env.DB_HOST,
+   user: process.env.DB_USER,
+   password: process.env.DB_PASSWORD,
+   database: process.env.DB_NAME,
 });
 
 // Promisify for Node.js async/await.

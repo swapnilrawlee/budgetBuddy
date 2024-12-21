@@ -11,11 +11,11 @@ const mysql = require('mysql2'); // Ensure mysql2 is installed and required
 // });
 
 const pool = mysql.createPool({
-    host: 'sql12.freesqldatabase.com',
-    port: 3306,
-    user: 'sql12743346',      // Your database user
-    password: 'gNwUI3phXi',      // Your database password
-    database: 'sql12743346' // Your database name
+   
+ host: process.env.DB_HOST,
+ user: process.env.DB_USER,
+ password: process.env.DB_PASSWORD,
+ database: process.env.DB_NAME,s
 });
 
 // Helper function to query the database
