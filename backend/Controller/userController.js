@@ -1,68 +1,76 @@
-const mysql2 = require('mysql2');
-const bcrypt = require('bcryptjs');
+require("dotenv").config();
+const mysql2 = require("mysql2");
+const postgres = require("postgres");
+const bcrypt = require("bcryptjs");
 
-// Database connection (ensure this is set up properly in your project)
-// const db = mysql2.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: '123456',
-//     database: 'budgetbuddy'
-// });
-
-const db = mysql2.createConnection({
-    host: 'sql12.freesqldatabase.com',
-    port: 3306,
-    user: 'sql12743346',      // Your database user
-    password: 'gNwUI3phXi',      // Your database password
-    database: 'sql12743346' // Your database name
+// Database connection using postgres
+const db = postgres(process.env.DATABASE_URL, {
+  host: process.env.host,
+  port: process.env.db_port,
+  database: process.env.database,
+  user: process.env.user,
+  pool_mode: process.env.pool_mode,
 });
 
+// Register function
 module.exports.register = async function (req, res) {
-    const { name, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ msg: 'All fields are required' });
-    } else {
-        db.query('SELECT * FROM users WHERE email =?', [email], async (err, result) => {
-            if (err) throw err;
-            if (result.length > 0) {
-                return res.status(400).json({ msg: 'Email already exists' });
-            } else {
-                const hashedPassword = await bcrypt.hash(password, 10);
+  if (!name || !email || !password) {
+    return res.status(400).json({ msg: "All fields are required" });
+  }
 
-                db.query('INSERT INTO users (name, email, password) VALUES (?,?,?)', [name, email, hashedPassword], (err, result) => {
-                    if (err) throw err;
-                    console.log('User registered successfully.');
-                    res.status(200).json({ msg: 'User registered successfully', user: user });
-                });
-            }
-        });
+  try {
+    // Check if the email already exists in the database
+    const result = await db`SELECT * FROM users WHERE email = ${email}`;
+
+    if (result.length > 0) {
+      return res.status(400).json({ msg: "Email already exists" });
     }
+
+    // Hash the password before saving it
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert the user into the database
+    await db`INSERT INTO users ("name", "email", "password") VALUES (${name}, ${email}, ${hashedPassword})`;
+
+    console.log("User registered successfully");
+    res.status(200).json({ msg: "User registered successfully" });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
 };
 
-module.exports.login = function (req, res) {
-    const { email, password } = req.body;
+// Login function
+module.exports.login = async function (req, res) {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ msg: 'All fields are required' });
-    } else {
-        db.query('SELECT * FROM users WHERE email =?', [email], async (err, result) => {
-            if (err) throw err;
-            if (result.length === 0) {
-                return res.status(400).json({ msg: 'Invalid email or password' });
-            } else {
-                const user = result[0];
+  if (!email || !password) {
+    return res.status(400).json({ msg: "All fields are required" });
+  }
 
-                // Compare the provided password with the hashed password
-                const isMatch = await bcrypt.compare(password, user.password);
+  try {
+    // Find the user by email
+    const result = await db`SELECT * FROM users WHERE email = ${email}`;
 
-                if (isMatch) {
-                    console.log('User logged in successfully.');
-                    res.status(200).json({ msg: 'Login successful', user: user });
-                } else {
-                    return res.status(400).json({ msg: 'Invalid email or password' });
-                }
-            }
-        });
+    if (result.length === 0) {
+      return res.status(400).json({ msg: "Invalid email or password" });
     }
+
+    const user = result[0];
+
+    // Compare the provided password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      console.log("User logged in successfully");
+      res.status(200).json({ msg: "Login successful", user: user });
+    } else {
+      return res.status(400).json({ msg: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
 };
