@@ -16,10 +16,10 @@ app.use(cookieParser());
 
 
 app.use("/api", authRoutes);
-// app.use("/transactionapi", transactionRoutes);
-// app.use("/searchtransactionapi", searchtransactionRoutes);
-// app.use("/goals", goalRoutes);
-// app.use("/reminders", transactionReminderRoutes);
+app.use("/transactionapi", transactionRoutes);
+app.use("/searchtransactionapi", searchtransactionRoutes);
+app.use("/goals", goalRoutes);
+app.use("/reminders", transactionReminderRoutes);
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {

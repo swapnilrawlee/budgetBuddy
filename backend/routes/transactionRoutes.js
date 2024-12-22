@@ -1,278 +1,207 @@
-// const express = require('express');
-// const router = express.Router();
-// const mysql2 = require('mysql2');
+const express = require('express');
+const router = express.Router();
+const db = require("../config/postgres"); // Assuming db is the PostgreSQL connection instance
 
-// // Create a connection pool
-// // const pool = mysql2.createPool({
-// //   host: 'localhost',
-// //   user: 'root',
-// //   password: '123456',
-// //   database: 'budgetbuddy',
-// //   waitForConnections: true,
-// //   connectionLimit: 10,
-// //   queueLimit: 0
-// // });
+// Get all transactions for a specific user
+router.get('/transactions', async (req, res) => {
+  const user_id = req.query.user_id; // Get user_id from query parameters
 
-// const pool = mysql2.createPool({
-  
-//  host: process.env.DB_HOST,
-//  user: process.env.DB_USER,
-//  password: process.env.DB_PASSWORD,
-//  database: process.env.DB_NAME,
-// });
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-// const promisePool = pool.promise(); // To use promises with MySQL queries
+  try {
+    const result = await db.query('SELECT * FROM transactions WHERE user_id = $1', [user_id]);
+    res.send(result.rows); // Access PostgreSQL query result via `rows`
+  } catch (error) {
+    console.error('Error fetching transactions:', error); // Log the error for debugging
+    res.status(500).send({ error: 'Error fetching transactions.' });
+  }
+});
 
-// // Get all transactions
-// router.get('/transactions', async (req, res) => {
-//   const user_id = req.query.user_id; // Get user_id from query parameters
+// Get the 3 most recent transactions for a specific user
+router.get('/recenttransactions', async (req, res) => {
+  const user_id = req.query.user_id;
 
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-//   try {
-//     const [rows] = await promisePool.query(
-//       'SELECT * FROM transactions WHERE user_id = ?',
-//       [user_id]
-//     );
-//     res.send(rows);
-//   } catch (error) {
-//     console.error('Error fetching transactions:', error); // Log the error for debugging
-//     res.status(500).send({ error: 'Error fetching transactions.' });
-//   }
-// });
+  try {
+    const result = await db.query(
+      'SELECT * FROM transactions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 3',
+      [user_id]
+    );
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Error fetching recent transactions:', error);
+    res.status(500).send({ error: 'Error fetching recent transactions.' });
+  }
+});
 
+// Get summary of income and expenses for a user
+router.get('/transactions/summary', async (req, res) => {
+  const user_id = req.query.user_id;
 
-// // Recent 3 transactions
-// // Recent 3 transactions for a specific user
-// router.get('/recenttransactions', async (req, res) => {
-//   const user_id = req.query.user_id; // Get user_id from query parameters
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
+  try {
+    const result = await db.query(`
+      SELECT 
+        SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income,
+        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expenses
+      FROM transactions
+      WHERE user_id = $1
+    `, [user_id]);
+    res.send(result.rows[0]); // Access PostgreSQL query result via `rows`
+  } catch (error) {
+    console.error('Error calculating totals:', error);
+    res.status(500).send({ error: 'Error calculating totals.' });
+  }
+});
 
-//   try {
-//     const [rows] = await promisePool.query(
-//       'SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 3',
-//       [user_id]
-//     );
-//     res.send(rows);
-//   } catch (error) {
-//     console.error('Error fetching recent transactions:', error); // Log the error for debugging
-//     res.status(500).send({ error: 'Error fetching recent transactions.' });
-//   }
-// });
+// Get total transaction amount for a user
+router.get('/transactions/total', async (req, res) => {
+  const user_id = req.query.user_id;
 
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-// // Total transaction of income and expense
-// router.get('/transactions/summary', async (req, res) => {
-//   const user_id = req.query.user_id;
+  try {
+    const result = await db.query(`
+      SELECT SUM(amount) AS total FROM transactions WHERE user_id = $1
+    `, [user_id]);
+    res.send(result.rows[0]); // Access PostgreSQL query result via `rows`
+  } catch (error) {
+    console.error('Error calculating total amount:', error);
+    res.status(500).send({ error: 'Error calculating total amount.' });
+  }
+});
 
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
+// Get net balance for a user (income - expenses)
+router.get('/transactions/net-balance', async (req, res) => {
+  const user_id = req.query.user_id;
 
-//   try {
-//     const [rows] = await promisePool.query(`
-//       SELECT 
-//         SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income,
-//         SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expenses
-//       FROM transactions
-//       WHERE user_id = ?
-//     `, [user_id]);
-//     res.send(rows[0]); // Send the result as an object
-//   } catch (error) {
-//     console.error('Error calculating totals:', error);
-//     res.status(500).send({ error: 'Error calculating totals.' });
-//   }
-// });
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-// // Total transaction amount
-// router.get('/transactions/total', async (req, res) => {
-//   const user_id = req.query.user_id;
+  try {
+    const result = await db.query(`
+      SELECT 
+        SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) - 
+        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS net_balance
+      FROM transactions
+      WHERE user_id = $1
+    `, [user_id]);
+    res.send(result.rows[0]); // Access PostgreSQL query result via `rows`
+  } catch (error) {
+    console.error('Error calculating net balance:', error);
+    res.status(500).send({ error: 'Error calculating net balance.' });
+  }
+});
 
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
+// Add a new transaction
+router.post('/transactions', async (req, res) => {
+  const { category, amount, type, user_id } = req.body;
 
-//   try {
-//     const [rows] = await promisePool.query(`
-//       SELECT SUM(amount) AS total FROM transactions WHERE user_id = ?
-//     `, [user_id]);
-//     res.send(rows[0]);
-//   } catch (error) {
-//     console.error('Error calculating total amount:', error);
-//     res.status(500).send({ error: 'Error calculating total amount.' });
-//   }
-// });
+  if (!category || isNaN(amount) || amount <= 0 || !['income', 'expense'].includes(type) || !user_id) {
+    return res.status(400).send({ error: 'Invalid input data.' });
+  }
 
+  try {
+    const result = await db.query(
+      'INSERT INTO transactions (category, amount, type, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
+      [category, amount, type, user_id]
+    );
 
-// // Net balance
-// router.get('/transactions/net-balance', async (req, res) => {
-//   const user_id = req.query.user_id;
+    const newTransaction = {
+      id: result.rows[0].id,
+      category,
+      amount,
+      type,
+      user_id
+    };
 
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
+    res.send(newTransaction);
+  } catch (error) {
+    console.error('Error adding transaction:', error);
+    res.status(500).send({ error: 'Error adding transaction.', details: error });
+  }
+});
 
-//   try {
-//     const [rows] = await promisePool.query(`
-//       SELECT 
-//         SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) - 
-//         SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS net_balance
-//       FROM transactions
-//       WHERE user_id = ?
-//     `, [user_id]);
-//     res.send(rows[0]); // Send the net balance as a response
-//   } catch (error) {
-//     console.error('Error calculating net balance:', error);
-//     res.status(500).send({ error: 'Error calculating net balance.' });
-//   }
-// });
+// Get transaction chart data (expenses vs income over time)
+router.get('/transactions/chart-data', async (req, res) => {
+  try {
+    const queryExpenses = `
+      SELECT DATE(created_at) as date, SUM(amount) as total
+      FROM transactions
+      WHERE type = 'expense'
+      GROUP BY DATE(created_at)
+      ORDER BY DATE(created_at)
+    `;
 
+    const queryIncome = `
+      SELECT DATE(created_at) as date, SUM(amount) as total
+      FROM transactions
+      WHERE type = 'income'
+      GROUP BY DATE(created_at)
+      ORDER BY DATE(created_at)
+    `;
 
-// // Add a new transaction
-// router.post('/transactions', async (req, res) => {
-//   const { category, amount, type, user_id } = req.body;
+    const expensesResult = await db.query(queryExpenses);
+    const incomeResult = await db.query(queryIncome);
 
-//   if (!category || isNaN(amount) || amount <= 0 || !['income', 'expense'].includes(type) || !user_id) {
-//     return res.status(400).send({ error: 'Invalid input data.' });
-//   }
+    const labels = Array.from(new Set([
+      ...expensesResult.rows.map(row => row.date),
+      ...incomeResult.rows.map(row => row.date)
+    ])).sort();
 
-//   try {
-//     const [result] = await promisePool.query(
-//       'INSERT INTO transactions (category, amount, type, user_id) VALUES (?, ?, ?, ?)',
-//       [category, amount, type, user_id]
-//     );
+    const expenseData = labels.map(label => {
+      const item = expensesResult.rows.find(row => row.date === label);
+      return item ? item.total : 0;
+    });
 
-//     const newTransaction = {
-//       id: result.insertId,
-//       category,
-//       amount,
-//       type,
-//       user_id
-//     };
+    const incomeData = labels.map(label => {
+      const item = incomeResult.rows.find(row => row.date === label);
+      return item ? item.total : 0;
+    });
 
-//     res.send(newTransaction);
-//   } catch (error) {
-//     console.error('Error adding transaction:', error); // Log the error for debugging
-//     res.status(500).send({ error: 'Error adding transaction.', details: error });
-//   }
-// });
+    res.json({ labels, expenses: expenseData, income: incomeData });
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
-// // Chart data
-// router.get('/transactions/chart-data', async (req, res) => {
-//   try {
-//     const queryExpenses = `
-//       SELECT DATE(created_at) as date, SUM(amount) as total
-//       FROM transactions
-//       WHERE type = 'expense'
-//       GROUP BY DATE(created_at)
-//       ORDER BY DATE(created_at)
-//     `;
+// Delete a transaction by ID
+router.delete('/transactions/:id', async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.query.user_id;
 
-//     const queryIncome = `
-//       SELECT DATE(created_at) as date, SUM(amount) as total
-//       FROM transactions
-//       WHERE type = 'income'
-//       GROUP BY DATE(created_at)
-//       ORDER BY DATE(created_at)
-//     `;
+  if (!user_id) {
+    return res.status(400).send({ error: 'User ID is required.' });
+  }
 
-//     const [expensesResults] = await promisePool.query(queryExpenses);
-//     const [incomeResults] = await promisePool.query(queryIncome);
+  try {
+    const result = await db.query(
+      'SELECT * FROM transactions WHERE id = $1 AND user_id = $2',
+      [id, user_id]
+    );
 
-//     const labels = Array.from(new Set([
-//       ...expensesResults.map(row => row.date),
-//       ...incomeResults.map(row => row.date)
-//     ])).sort();
+    if (result.rows.length === 0) {
+      return res.status(404).send({ error: 'Transaction not found or unauthorized.' });
+    }
 
-//     const expenseData = labels.map(label => {
-//       const item = expensesResults.find(row => row.date === label);
-//       return item ? item.total : 0;
-//     });
+    await db.query('DELETE FROM transactions WHERE id = $1 AND user_id = $2', [id, user_id]);
+    res.send({ message: 'Transaction deleted' });
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+    res.status(500).send({ error: 'Error deleting transaction.' });
+  }
+});
 
-//     const incomeData = labels.map(label => {
-//       const item = incomeResults.find(row => row.date === label);
-//       return item ? item.total : 0;
-//     });
-
-//     res.json({ labels, expenses: expenseData, income: incomeData });
-//   } catch (error) {
-//     console.error('Error fetching chart data:', error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-
-
-// router.get('/transactions/report', async (req, res) => {
-//   const user_id = req.query.user_id; // Get user_id from query parameters
-
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
-
-//   try {
-//     const [rows] = await promisePool.query(`
-//       SELECT 
-//         DATE_FORMAT(created_at, '%Y-%m-%d') AS date, 
-//         category, 
-//         CASE 
-//           WHEN type = 'income' THEN CONCAT('₹', FORMAT(amount, 2)) 
-//           WHEN type = 'expense' THEN CONCAT('-₹', FORMAT(amount, 2)) 
-//         END AS amount
-//       FROM transactions
-//       WHERE user_id = ?
-//       ORDER BY created_at DESC  LIMIT 3
-//     `, [user_id]);
-
-//     res.send(rows); // Send the detailed report data
-//   } catch (error) {
-//     console.error('Error fetching detailed report:', error);
-//     res.status(500).send({ error: 'Error fetching detailed report.' });
-//   }
-// });
-
-
-
-
-// // Delete a transaction
-// router.delete('/transactions/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const user_id = req.query.user_id; // Get user_id from query parameters
-
-//   if (!user_id) {
-//     return res.status(400).send({ error: 'User ID is required.' });
-//   }
-
-//   try {
-//     // Check if the transaction exists and belongs to the user
-//     const [transaction] = await promisePool.query(
-//       'SELECT * FROM transactions WHERE id = ? AND user_id = ?',
-//       [id, user_id]
-//     );
-
-//     if (transaction.length === 0) {
-//       return res.status(404).send({ error: 'Transaction not found or unauthorized.' });
-//     }
-
-//     // Proceed to delete the transaction
-//     const [result] = await promisePool.query(
-//       'DELETE FROM transactions WHERE id = ? AND user_id = ?',
-//       [id, user_id]
-//     );
-
-//     if (result.affectedRows === 0) {
-//       return res.status(404).send({ error: 'Transaction not found.' });
-//     }
-
-//     res.send({ message: 'Transaction deleted' });
-//   } catch (error) {
-//     console.error('Error deleting transaction:', error); // Log the error for debugging
-//     res.status(500).send({ error: 'Error deleting transaction.', details: error });
-//   }
-// });
-
-// module.exports = router;
+module.exports = router;
