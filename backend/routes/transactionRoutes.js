@@ -3,14 +3,22 @@ const router = express.Router();
 const mysql2 = require('mysql2');
 
 // Create a connection pool
+// const pool = mysql2.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '123456',
+//   database: 'budgetbuddy',
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0
+// });
+
 const pool = mysql2.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '123456',
-  database: 'budgetbuddy',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  host: 'sql12.freesqldatabase.com',
+  port: 3306,
+  user: 'sql12743346',      // Your database user
+  password: 'gNwUI3phXi',      // Your database password
+  database: 'sql12743346' // Your database name
 });
 
 const promisePool = pool.promise(); // To use promises with MySQL queries
@@ -144,7 +152,7 @@ router.post('/transactions', async (req, res) => {
       category,
       amount,
       type,
-      user_id 
+      user_id
     };
 
     res.send(newTransaction);
