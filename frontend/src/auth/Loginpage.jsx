@@ -99,7 +99,10 @@ const Loginpage = () => {
           <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
         )}
       </form>
-      <ImageCompo />
+      <div className="desktop-image">
+        <ImageCompo />
+      </div>
+      {/*  */}
     </div>
   );
 };
