@@ -67,7 +67,7 @@ const Homepage = () => {
         "/transactionapi//transactions/total",
         { params: { user_id } }
       );
-      console.log(response);
+      // console.log(response);
       
       setTotal(response.data.total);
     } catch (error) {

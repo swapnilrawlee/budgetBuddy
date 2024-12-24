@@ -24,7 +24,7 @@ const Budget = () => {
       });
 
       // Debugging log to inspect the API response
-      console.log("API response:", response);
+      // console.log("API response:", response);
 
       if (Array.isArray(response.data)) {
         setTransactions(response.data);
