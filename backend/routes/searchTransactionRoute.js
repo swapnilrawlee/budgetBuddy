@@ -13,11 +13,11 @@ router.get('/transactions/export', async (req, res) => {
     }
 
     // Query to fetch the transactions
-    const result = await db.query(`
+    const result = await db`
       SELECT category, amount, type, created_at
       FROM transactions
-      WHERE user_id = $1
-    `, [user_id]);
+      WHERE user_id = ${user_id}
+    `;
 
     const transactions = result.rows;
 
@@ -57,16 +57,16 @@ router.get('/transactions', async (req, res) => {
       return res.status(400).send({ error: 'User ID is required.' });
     }
 
-    let query = 'SELECT * FROM transactions WHERE user_id = $1';
-    const params = [user_id];
+    let query = `SELECT * FROM transactions WHERE user_id = ${user_id}`;
 
     // Add search filter if a search term is provided
     if (search) {
-      query += ` AND (category ILIKE $2 OR type ILIKE $2 OR amount::text ILIKE $2)`;
-      params.push('%' + search + '%');
+      query += ` AND (category ILIKE '%${search}%' OR type ILIKE '%${search}%' OR amount::text ILIKE '%${search}%')`;
     }
-
-    const result = await db.query(query, params);
+    
+    console.log(query);
+    
+    const result = await db`(query, params)`;
     res.send(result.rows);
   } catch (error) {
     console.error('Error fetching transactions:', error);

@@ -9,17 +9,19 @@ router.post('/', async (req, res) => {
     console.log(req.body);
 
     // Insert into the database
-    const result = await db.query(
-      'INSERT INTO reminders (user_id, transaction_date, name, amount) VALUES ($1, $2, $3, $4) RETURNING id',
-      [user_id, transactionDate, name, amount]
-    );
+    const result = await db`
+      INSERT INTO reminders (user_id, transaction_date, name, amount)
+      VALUES (${user_id}, ${transactionDate}, ${name}, ${amount})
+      RETURNING id
+    `;
 
-    res.status(201).json({ message: 'Reminder added successfully', id: result.rows[0].id });
+    res.status(201).json({ message: 'Reminder added successfully', id: result[0].id });
   } catch (error) {
     console.error('Error adding reminder:', error);
     res.status(500).json({ error: 'An error occurred while adding the reminder.' });
   }
 });
+
 
 // GET / - Fetch all reminders for a user
 router.get('/', async (req, res) => {
@@ -31,12 +33,9 @@ router.get('/', async (req, res) => {
     }
 
     // Fetch reminders for the given user_id
-    const result = await db.query(
-      'SELECT * FROM reminders WHERE user_id = $1',
-      [user_id]
-    );
+    const result = await db`SELECT * FROM reminders WHERE user_id = ${user_id}`;
 
-    res.status(200).json(result.rows);
+    res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching reminders:', error);
     res.status(500).json({ error: 'An error occurred while fetching reminders.' });
@@ -53,16 +52,14 @@ router.get('/upcoming', async (req, res) => {
 
   try {
     // Query to fetch the upcoming three transactions
-    const result = await db.query(
-      'SELECT * FROM reminders WHERE user_id = $1 AND transaction_date >= CURRENT_DATE ORDER BY transaction_date ASC LIMIT 3',
-      [user_id]
-    );
+    const result = await db`
+      SELECT * FROM reminders WHERE user_id = ${user_id} AND transaction_date >= CURRENT_DATE ORDER BY transaction_date ASC LIMIT 3`;
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return res.status(404).json({ message: 'No upcoming transactions found' });
     }
 
-    res.json(result.rows);
+    res.json(result);
   } catch (error) {
     console.error('Error fetching upcoming transactions:', error);
     res.status(500).json({ message: 'An error occurred while fetching transactions.' });
@@ -75,7 +72,7 @@ router.delete('/:id', async (req, res) => {
     const reminderId = req.params.id;
 
     // Delete the reminder
-    await db.query('DELETE FROM reminders WHERE id = $1', [reminderId]);
+    await db`DELETE FROM reminders WHERE id = ${reminderId}`;
 
     res.status(200).json({ message: 'Reminder deleted successfully.' });
   } catch (error) {
