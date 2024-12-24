@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import { Navigate, useNavigate } from "react-router-dom";
+import axiosInstance from "../axios";
 
 const sharedClasses = {
   formInput: "form-input p-2 border-2",
@@ -45,7 +46,7 @@ const FinancialGoalForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/goals/creategoal', { ...formData, user_id });
+      await axiosInstance.post('/goals/creategoal', { ...formData, user_id });
       setFormData({
         user_id: '',
         goal_name: '',

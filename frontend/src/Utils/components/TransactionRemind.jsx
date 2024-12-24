@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../axios";
 
 const cardClasses =
   "bg-black dark:bg-card-foreground text-white dark:text-card p-4 min-w-[50vw] rounded-lg  shadow-md max-w-sm mx-auto mt-8";
@@ -18,7 +19,7 @@ const TransactionRemind = () => {
     const user_id = localStorage.getItem("user_id");
 
     try {
-      const response = await axios.get("http://localhost:3000/reminders", {
+      const response = await axiosInstance.get("/reminders", {
         params: { user_id },
       });
       setData(response.data);
@@ -31,7 +32,7 @@ const TransactionRemind = () => {
 
   const deleteReminder = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/reminders/${id}`);
+      await axiosInstance.delete(`/reminders/${id}`);
       setData(data.filter((reminder) => reminder.id !== id));
     } catch (error) {
       console.error("Error deleting reminder:", error);

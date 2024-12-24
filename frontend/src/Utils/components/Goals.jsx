@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import axiosInstance from '../axios';
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
@@ -11,7 +12,7 @@ const Goals = () => {
     const userId = localStorage.getItem('user_id');
 
     if (userId) {
-      axios.get('http://localhost:3000/goals/getgoals', {
+      axiosInstance.get('/goals/getgoals', {
         params: { user_id: userId },
       })
         .then(response => {
@@ -37,7 +38,7 @@ const Goals = () => {
 
   // Handle delete goal
   const handleDeleteGoal = (goalId) => {
-    axios.delete(`http://localhost:3000/goals/deletegoal/${goalId}`)
+    axiosInstance.delete(`/goals/deletegoal/${goalId}`)
       .then(() => {
         setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
         if (selectedGoal && selectedGoal.id === goalId) {

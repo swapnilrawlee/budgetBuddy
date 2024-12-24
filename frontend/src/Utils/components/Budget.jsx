@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
+import axiosInstance from "../axios";
 
 const Budget = () => {
   const [category, setCategory] = useState("");
@@ -18,8 +19,8 @@ const Budget = () => {
     try {
       // Retrieve user ID from localStorage
       const user_id = localStorage.getItem("user_id");
-            const response = await axios.get(
-        "http://localhost:3000/transactionapi/transactions",{
+            const response = await axiosInstance.get(
+        "/transactionapi/transactions",{
           params: { user_id },
         }
       );
@@ -50,8 +51,8 @@ const Budget = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.post(
-        "http://localhost:3000/transactionapi/transactions",
+      const response = await axiosInstance.post(
+        "/transactionapi/transactions",
         newTransaction
       );
       setTransactions([...transactions, response.data]);
@@ -70,8 +71,8 @@ const Budget = () => {
     setError("");
     try {
       let userId =localStorage.getItem("user_id");
-      await axios.delete(
-        `http://localhost:3000/transactionapi/transactions/${id}?user_id=${userId}`
+      await axiosInstance.delete(
+        `/transactionapi/transactions/${id}?user_id=${userId}`
       );
       setTransactions(
         transactions.filter((transaction) => transaction.id !== id)

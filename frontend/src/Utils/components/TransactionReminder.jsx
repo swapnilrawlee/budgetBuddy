@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios'; // Ensure axios is imported
 import Navbar from '../../components/Navbar';
 import { Navigate, useNavigate } from 'react-router-dom';
+import axiosInstance from '../axios';
 
 const cardClasses = "bg-black dark:bg-card-foreground mb-4 text-white dark:text-card min-w-[40vw] p-4 rounded-lg shadow-md max-w-sm mx-auto mt-8";
 const textClasses = "text-xs text-muted-foreground text-sm font-semibold";
@@ -19,7 +20,7 @@ const TransactionReminder = () => {
         const user_id = localStorage.getItem('user_id');
 
 
-        axios.post('http://localhost:3000/reminders', {transactionDate,name,amount, user_id})
+        axiosInstance.post('/reminders', {transactionDate,name,amount, user_id})
         .then(response => {
             alert('Transaction reminder set successfully.');
             Navigate('/transactionremind')
