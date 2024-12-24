@@ -60,7 +60,7 @@ const Loginpage = () => {
 
       <form
         onSubmit={submitHandler}
-        className="flex w-full max-w-sm h-auto justify-center ml-[20%] flex-col items-center px-5 py-4 gap-4 rounded-lg backdrop-sepia-0 bg-white/90 shadow-black shadow-lg"
+        className="flex authform w-full max-w-sm h-auto justify-center ml-[20%] flex-col items-center px-5 py-4 gap-4 rounded-lg backdrop-sepia-0 bg-white/90 shadow-black shadow-lg"
       >
         <h1 className="text-2xl my-3">Welcome Back</h1>
         <input

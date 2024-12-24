@@ -31,9 +31,14 @@ body {
   .desktop-image {
     display: none;
   }
+  .authform{
+    width: 100vw;
+    margin-left: 0;
+  }
 }
 @media (min-width: 769px) {
   .desktop-image {
     display: block;
   }
+
 }
