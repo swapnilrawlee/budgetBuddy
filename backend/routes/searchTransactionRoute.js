@@ -19,7 +19,7 @@ router.get('/transactions/export', async (req, res) => {
       WHERE user_id = ${user_id}
     `;
 
-    const transactions = result.rows;
+    const transactions = result;
 
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Transactions');
@@ -57,21 +57,29 @@ router.get('/transactions', async (req, res) => {
       return res.status(400).send({ error: 'User ID is required.' });
     }
 
-    let query = `SELECT * FROM transactions WHERE user_id = ${user_id}`;
+    // Start the base query
+    let query = db`SELECT * FROM transactions WHERE user_id = ${user_id}`;
 
     // Add search filter if a search term is provided
     if (search) {
-      query += ` AND (category ILIKE '%${search}%' OR type ILIKE '%${search}%' OR amount::text ILIKE '%${search}%')`;
+      query = db`
+        ${query} 
+        AND (
+          category ILIKE ${'%' + search + '%'} 
+          OR type::text ILIKE ${'%' + search + '%'} 
+          OR amount::text ILIKE ${'%' + search + '%'}
+        )
+      `;
     }
+
+    const result = await query;
     
-    console.log(query);
-    
-    const result = await db`(query, params)`;
-    res.send(result.rows);
+    res.send(result);
   } catch (error) {
     console.error('Error fetching transactions:', error);
     res.status(500).send({ error: 'Error fetching transactions.' });
   }
 });
+
 
 module.exports = router;

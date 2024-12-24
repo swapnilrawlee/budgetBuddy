@@ -35,7 +35,7 @@ const RecentTransactions = () => {
             <p className="text-gray-500">No recent transactions.</p>
         ) : (
                     transactions.map((transaction) => (
-                        <div key={transaction.id} className="flex justify-between mb-4 w-full  p-4 rounded-lg shadow-md bg-blue-300 text-blue-900">
+                        <div key={transaction.id} className="flex justify-between mb-4 w-full flex-col  p-4 rounded-lg shadow-md bg-blue-300 text-blue-900">
                             <div className={`text-blue-900 font-semibold `}>{transaction.category}</div>
                             <div className={`font-semibold ${transaction.type === 'income' ? 'text-green-900' : 'text-red-900'}`}>
                                 ₹{transaction.amount}

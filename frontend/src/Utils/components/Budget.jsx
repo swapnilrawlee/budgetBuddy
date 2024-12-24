@@ -11,6 +11,7 @@ const Budget = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Always fetch the transactions from the database every time the component is mounted
     fetchTransactions();
   }, []);
 
@@ -23,9 +24,8 @@ const Budget = () => {
       });
 
       // Debugging log to inspect the API response
-      console.log("API response:", response.data);
+      console.log("API response:", response);
 
-      // Check if the response is an array
       if (Array.isArray(response.data)) {
         setTransactions(response.data);
       } else {
@@ -46,7 +46,7 @@ const Budget = () => {
       return;
     }
 
-    const user_id = localStorage.getItem("user_id"); // Retrieve user ID from localStorage
+    const user_id = localStorage.getItem("user_id");
     const newTransaction = {
       category,
       amount: parseFloat(amount),
@@ -67,6 +67,8 @@ const Budget = () => {
       ]);
       setCategory("");
       setAmount("");
+      // Optionally, refetch transactions to get the latest data
+      fetchTransactions();
     } catch (error) {
       console.error(`Error adding ${type}:`, error);
       setError(`Error adding ${type}.`);
@@ -86,6 +88,8 @@ const Budget = () => {
       setTransactions((prevTransactions) =>
         prevTransactions.filter((transaction) => transaction.id !== id)
       );
+      // Optionally, refetch transactions to get the latest data
+      fetchTransactions();
     } catch (error) {
       console.error("Error deleting transaction:", error);
       setError("Error deleting transaction.");
@@ -148,7 +152,6 @@ const Budget = () => {
         <div className="mt-6">
           <h2 className="text-2xl">Transactions</h2>
           <ul className="mt-4">
-            {/* Only map over transactions if it's an array */}
             {Array.isArray(transactions) && transactions.length > 0 ? (
               transactions.map((transaction) => (
                 <li
@@ -164,13 +167,7 @@ const Budget = () => {
                     {` ${transaction.category}: ₹${transaction.amount}`}
                   </span>
                   <button
-                    onClick={() => {
-                      if (transaction.id) {
-                        handleDelete(transaction.id);
-                      } else {
-                        console.error("Transaction ID is undefined");
-                      }
-                    }}
+                    onClick={() => handleDelete(transaction.id)}
                     className="bg-red-500 py-1 px-2 rounded"
                   >
                     Delete
