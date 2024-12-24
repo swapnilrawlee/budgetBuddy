@@ -29,7 +29,7 @@ const Budget = () => {
       if (Array.isArray(response.data)) {
         setTransactions(response.data);
       } else {
-        console.error("Expected an array of transactions but got:", response.data);
+        console.error("Expected an array of transactions but got:", response);
         setTransactions([]);  // Clear existing data in case of error
       }
     } catch (error) {

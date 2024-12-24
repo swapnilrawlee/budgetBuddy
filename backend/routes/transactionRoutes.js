@@ -14,7 +14,7 @@ router.get("/transactions", async (req, res) => {
     const result =
       await db`SELECT * FROM transactions WHERE user_id = ${user_id}`;
     console.log(result);
-    res.send(result.rows); // Access PostgreSQL query result via `rows`
+    res.send(result); // Access PostgreSQL query result via `rows`
   } catch (error) {
     console.error("Error fetching transactions:", error); // Log the error for debugging
     res.status(500).send({ error: "Error fetching transactions." });
@@ -48,8 +48,7 @@ router.get("/transactions/summary", async (req, res) => {
   }
 
   try {
-    const result = await db
-      `
+    const result = await db`
       SELECT 
         SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income,
         SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expenses
@@ -81,15 +80,15 @@ router.get("/transactions/total", async (req, res) => {
     if (result.length > 0) {
       res.send(result[0]); // Directly access the first row of the result
     } else {
-      res.status(404).send({ error: "No transactions found for the given user." });
+      res
+        .status(404)
+        .send({ error: "No transactions found for the given user." });
     }
   } catch (error) {
     console.error("Error calculating total amount:", error);
     res.status(500).send({ error: "Error calculating total amount." });
   }
 });
-
-
 // Get net balance for a user (income - expenses)
 router.get("/transactions/net-balance", async (req, res) => {
   const user_id = req.query.user_id;
@@ -110,14 +109,15 @@ router.get("/transactions/net-balance", async (req, res) => {
     if (result.length > 0) {
       res.send(result[0]); // Access the result directly
     } else {
-      res.status(404).send({ error: "No transactions found for the given user." });
+      res
+        .status(404)
+        .send({ error: "No transactions found for the given user." });
     }
   } catch (error) {
     console.error("Error calculating net balance:", error);
     res.status(500).send({ error: "Error calculating net balance." });
   }
 });
-
 
 // Add a new transaction
 router.post("/transactions", async (req, res) => {
@@ -165,7 +165,7 @@ router.get("/transactions/chart-data", async (req, res) => {
       ORDER BY DATE(created_at)
     `;
 
-     const incomeResult = await db`
+    const incomeResult = await db`
       SELECT DATE(created_at) as date, SUM(amount) as total
       FROM transactions
       WHERE type = 'income'
@@ -207,10 +207,8 @@ router.delete("/transactions/:id", async (req, res) => {
   }
 
   try {
-    const result = await db.query(
-      "SELECT * FROM transactions WHERE id = $1 AND user_id = $2",
-      [id, user_id]
-    );
+    const result = await db`
+      SELECT * FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
 
     if (result.length === 0) {
       return res
