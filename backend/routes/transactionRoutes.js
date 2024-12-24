@@ -4,7 +4,7 @@ const db = require("../config/postgres"); // Assuming db is the PostgreSQL conne
 
 // Get all transactions for a specific user
 router.get('/transactions', async (req, res) => {
-  const user_id = req.query.user_id; // Get user_id from query parameters
+  const user_id = req.query.user_id; 
 
   if (!user_id) {
     return res.status(400).send({ error: 'User ID is required.' });
@@ -12,6 +12,7 @@ router.get('/transactions', async (req, res) => {
 
   try {
     const result = await db.query('SELECT * FROM transactions WHERE user_id = $1', [user_id]);
+    console.log(result.rows);
     res.send(result.rows); // Access PostgreSQL query result via `rows`
   } catch (error) {
     console.error('Error fetching transactions:', error); // Log the error for debugging
