@@ -20,7 +20,7 @@ const Transactions = () => {
 
   const transactionSearch = async () => {
     try {
-      const userId = localStorage.getItem("user_id"); // Get user_id from local storage
+      const userId = sessionStorage.getItem("user_id"); // Get user_id from sessionStorage 
       if (!userId) {
         console.error("User ID not found in local storage");
         return;
@@ -40,9 +40,9 @@ const Transactions = () => {
   };
 
   const handleExportToExcel = () => {
-    const userId = localStorage.getItem("user_id");
+    const userId = sessionStorage.getItem("user_id");
     if (!userId) {
-      console.error("User ID not found in local storage");
+      console.error("User ID not found in sessionStorage");
       return;
     }
 
@@ -83,7 +83,7 @@ const Transactions = () => {
           <div className="flex gap-2">
             <button
               type="button"
-              className="rounded p-2 bg-gray-500 text-white"
+              className="rounded p-2 bg-blue-500 text-white"
               onClick={handleExportToExcel}
             >
               Export to Excel

@@ -17,7 +17,7 @@ const TransactionReminder = () => {
     
 
     const handleTransactionReminder = () => {
-        const user_id = localStorage.getItem('user_id');
+        const user_id = sessionStorage.getItem('user_id');
 
 
         axiosInstance.post('/reminders', {transactionDate,name,amount, user_id})

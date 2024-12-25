@@ -9,7 +9,7 @@ const RecentTransactions = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
-                const user_id = localStorage.getItem('user_id');
+                const user_id = sessionStorage.getItem('user_id');
                 const response = await axiosInstance.get('/transactionapi/recenttransactions',{
                     params: { user_id },
                 });                 

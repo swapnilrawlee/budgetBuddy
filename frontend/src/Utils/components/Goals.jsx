@@ -9,7 +9,7 @@ const Goals = () => {
   const [selectedGoal, setSelectedGoal] = useState(null);
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
+    const userId = sessionStorage.getItem('user_id');
 
     if (userId) {
       axiosInstance.get('/goals/getgoals', {
@@ -32,7 +32,7 @@ const Goals = () => {
           alert('An error occurred while fetching your goals.');
         });
     } else {
-      console.error('No user_id found in localStorage');
+      console.error('No user_id found in sessionStorage');
     }
   }, []);
 

@@ -24,7 +24,6 @@ module.exports.register = async function (req, res) {
     // Insert the user into the database
     await db`INSERT INTO users ("name", "email", "password") VALUES (${name}, ${email}, ${hashedPassword})`;
 
-    console.log("User registered successfully");
     res.status(200).json({ msg: "User registered successfully" });
   } catch (error) {
     console.log("Error:", error);

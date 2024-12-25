@@ -34,9 +34,7 @@ const Registerpage = () => {
 
     setIsLoading(true);
     setErrorMessage("");
-    console.log(name);
-    console.log(email);
-    console.log(password);
+  
     try {
       const response = await axiosInstance.post("/api/register", {
         name,

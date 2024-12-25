@@ -18,7 +18,7 @@ const Budget = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const user_id = localStorage.getItem("user_id");
+      const user_id = sessionStorage.getItem("user_id");
       const response = await axiosInstance.get("/transactionapi/transactions", {
         params: { user_id },
       });
@@ -46,7 +46,7 @@ const Budget = () => {
       return;
     }
 
-    const user_id = localStorage.getItem("user_id");
+    const user_id = sessionStorage.getItem("user_id");
     const newTransaction = {
       category,
       amount: parseFloat(amount),
@@ -81,7 +81,7 @@ const Budget = () => {
     setLoading(true);
     setError("");
     try {
-      let userId = localStorage.getItem("user_id");
+      let userId = sessionStorage.getItem("user_id");
       await axiosInstance.delete(
         `/transactionapi/transactions/${id}?user_id=${userId}`
       );

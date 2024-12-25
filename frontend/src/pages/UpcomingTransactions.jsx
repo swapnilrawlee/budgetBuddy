@@ -12,7 +12,7 @@ const UpcomingTransaction = () => {
   const [error, setError] = useState("");
 
   const fetchUpcomingTransactions = async () => {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = sessionStorage.getItem("user_id");
 
     try {
       const response = await axios.get("http://localhost:3000/reminders/upcoming", {

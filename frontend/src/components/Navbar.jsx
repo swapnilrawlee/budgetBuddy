@@ -8,7 +8,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path ? 'bg-white text-black p-2 text-3xl rounded-3xl' : ''
   const logoutHandler = () => {
     navigate('/')
-    localStorage.removeItem('user_id')
+    sessionStorage.removeItem('user_id');
   }
 
   return (

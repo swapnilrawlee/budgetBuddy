@@ -14,6 +14,7 @@ import { UserContext } from "./userContext.js";
 import FinancialGoalForm from "./components/FinancialGoalForm.jsx";
 import TransactionRemind from "./components/TransactionRemind.jsx";
 import TransactionReminder from "./components/TransactionReminder.jsx";
+import Error404page from "../components/Error404page.jsx";
 
 const Routing = () => {
   const [userdata ,setUserdata] =useState("null")
@@ -34,6 +35,8 @@ const Routing = () => {
       <Route path="/help" element={<Helppage/>} />
       <Route path="/userprofile" element={<Userprofile/>} />
       <Route path="/newgoal" element={<FinancialGoalForm/>} />
+      <Route path="/newgoal" element={<FinancialGoalForm/>} />
+      <Route path="*" element={<Error404page />} />
     </Routes>
     </UserContext.Provider>
   );

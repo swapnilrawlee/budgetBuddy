@@ -29,8 +29,8 @@ const FinancialGoalForm = () => {
   });
   const [user_id, setUserId] = useState('');
   useEffect(() => {
-    // Retrieve user_id from localStorage
-    const storedUserId = localStorage.getItem('user_id');
+    // Retrieve user_id from sessionStorage
+    const storedUserId = sessionStorage.getItem('user_id');
     setUserId(storedUserId);
     setFormData(prevFormData => ({
       ...prevFormData,

@@ -38,7 +38,7 @@ const Loginpage = () => {
       });
       if (response.status === 200) {
         setUserdata(response.data.user);
-        localStorage.setItem("user_id", response.data.user.id);
+        sessionStorage.setItem("user_id", response.data.user.id);
         Navigate("/home");
       } else {
         setErrorMessage("Login failed. Please check your credentials.");

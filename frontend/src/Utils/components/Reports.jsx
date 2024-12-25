@@ -11,7 +11,7 @@ const Reports = () => {
   const [report, setReport] = useState([]);
 
   const handleTransaction = async () => {
-    const user_id = localStorage.getItem('user_id');
+    const user_id = sessionStorage.getItem('user_id');
     const response = await axiosInstance.get('/transactionapi/transactions/summary',{
       params: {user_id}
     });
@@ -21,7 +21,7 @@ const Reports = () => {
 
   const handleTotal = async () => {
     try {
-      const user_id = localStorage.getItem('user_id');
+      const user_id = sessionStorage.getItem('user_id');
       const response = await axiosInstance.get('/transactionapi/transactions/total',{
         params: {user_id}
       });
@@ -33,7 +33,7 @@ const Reports = () => {
 
   const handleNetBalance = async () => {
     try {
-      const user_id = localStorage.getItem('user_id');
+      const user_id = sessionStorage.getItem('user_id');
       const response = await axiosInstance.get('/transactionapi/transactions/net-balance',{
         params: {user_id}
       });
@@ -46,7 +46,7 @@ const Reports = () => {
 
   const fetchChartData = async () => {
     try {
-      const user_id = localStorage.getItem('user_id');
+      const user_id = sessionStorage.getItem('user_id');
 
       const response = await axiosInstance.get('/transactionapi/transactions/chart-data',{
         params: {user_id}
@@ -58,7 +58,7 @@ const Reports = () => {
   };
   const fetchreport = async () => {
     try {
-      const user_id = localStorage.getItem('user_id');
+      const user_id = sessionStorage.getItem('user_id');
       const response = await axiosInstance.get('/transactionapi/transactions/report',{
         params: {user_id}
       });

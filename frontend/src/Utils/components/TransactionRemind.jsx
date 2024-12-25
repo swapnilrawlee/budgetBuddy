@@ -16,7 +16,7 @@ const TransactionRemind = () => {
   const [data, setData] = useState([]);
 
   const handleTransactionReminder = async () => {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = sessionStorage.getItem("user_id");
 
     try {
       const response = await axiosInstance.get("/reminders", {

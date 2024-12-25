@@ -49,7 +49,7 @@ const Homepage = () => {
   };
 
   const handletransaction = async () => {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = sessionStorage.getItem("user_id");
 
     const response = await axiosInstance.get(
       "/transactionapi/transactions/summary",
@@ -62,7 +62,8 @@ const Homepage = () => {
 
   const handletotal = async () => {
     try {
-      const user_id = localStorage.getItem("user_id");
+      sessionStorage.getItem("user_id")
+      const user_id = sessionStorage.getItem("user_id");
       const response = await axiosInstance.get(
         "/transactionapi//transactions/total",
         { params: { user_id } }
@@ -76,7 +77,7 @@ const Homepage = () => {
   };
   const handlenetbalance = async () => {
     try {
-      const user_id = localStorage.getItem("user_id");
+      const user_id = sessionStorage.getItem("user_id");
 
       const response = await axiosInstance.get(
         "/transactionapi/transactions/net-balance",
@@ -99,6 +100,7 @@ const Homepage = () => {
     handletotal();
     handlenetbalance();
   }, [totalIncome, totalExpense]);
+
 
   return (
     <div className="w-screen min-h-screen flex justify-between">
@@ -137,9 +139,7 @@ const Homepage = () => {
               </div>
             </div>
           </section>
-         
           <RecentTransaction />
-     
           <UpcomingTransaction/>
         </main>
       </div>
