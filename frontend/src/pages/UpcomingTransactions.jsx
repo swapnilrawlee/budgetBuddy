@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "../Utils/axios";
 
 const cardClasses =
   "bg-card dark:bg-card-foreground text-card-foreground dark:text-card p-4 min-w-full rounded-lg shadow-md max-w-sm mx-auto mt-8";
@@ -15,7 +16,7 @@ const UpcomingTransaction = () => {
     const user_id = sessionStorage.getItem("user_id");
 
     try {
-      const response = await axios.get("http://localhost:3000/reminders/upcoming", {
+      const response = await axiosInstance.get("/reminders/upcoming", {
         params: { user_id },
       });
       setTransactions(response.data);
