@@ -6,7 +6,19 @@ const db = require("../config/postgres"); // Assuming db is the PostgreSQL conne
 router.post('/', async (req, res) => {
   try {
     const { user_id, transactionDate, name, amount } = req.body;
-    console.log(req.body);
+
+    // Input validation
+    if (!user_id || !transactionDate || !name || !amount) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+
+    if (name.length > 20) {
+      return res.status(400).json({ error: 'Name should not exceed 20 characters.' });
+    }
+
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ error: 'Amount should be a positive number.' });
+    }
 
     // Insert into the database
     const result = await db`
@@ -21,6 +33,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while adding the reminder.' });
   }
 });
+
 
 
 // GET / - Fetch all reminders for a user

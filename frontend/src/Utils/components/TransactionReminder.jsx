@@ -22,7 +22,6 @@ const TransactionReminder = () => {
 
         axiosInstance.post('/reminders', {transactionDate,name,amount, user_id})
         .then(response => {
-            alert('Transaction reminder set successfully.');
             Navigate('/transactionremind')
         })
         .catch(error => {
@@ -52,6 +51,8 @@ const TransactionReminder = () => {
                         <input
                             type="text"
                             value={name}
+                            maxLength="20" 
+                            placeholder='Name should not exceed 20 characters'
                             onChange={(e) => setName(e.target.value)}
                             className="border border-gray-300 p-2 text-black rounded-md w-full"
                         />
