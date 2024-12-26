@@ -31,10 +31,57 @@ body {
   .desktop-image {
     display: none;
   }
+  .navbar{
+    width:30%;
+  }
   .authform{
     width: 100vw;
     margin-left: 0;
   }
+  .maindiv{
+    align-items:center;
+  }
+  .bigText{
+    font-size:1.2rem;
+  }
+
+
+  .midText{
+    font-size:0.9rem;
+  }
+  .smallText{
+    font-size:0.8rem;
+  }
+.weather{
+  margin:0;
+}
+.flexWithCol{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+}
+.flexWithRow{
+  display:flex;
+  gap:4px;
+}
+.margin{
+  margin:0;
+}
+main{
+  padding:0;
+  margin:0;
+}
+.remindbox{
+  padding:10px;
+}
+table{
+  padding:0px;
+  width:20%;
+}
+.marginmedia{
+  margin-left:30%
+}
 }
 @media (min-width: 769px) {
   .desktop-image {

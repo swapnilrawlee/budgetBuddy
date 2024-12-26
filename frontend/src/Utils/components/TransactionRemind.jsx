@@ -5,7 +5,7 @@ import axios from "axios";
 import axiosInstance from "../axios";
 
 const cardClasses =
-  "bg-black dark:bg-card-foreground text-white dark:text-card p-4 min-w-[50vw] rounded-lg  shadow-md max-w-sm mx-auto mt-8";
+  "bg-black  smallText dark:bg-card-foreground text-white  remindbox dark:text-card p-4 min-w-[50vw] rounded-lg  shadow-md max-w-sm mx-auto mt-8";
 const textClasses = "text-xs text-muted-foreground text-sm font-semibold";
 const buttonClasses =
   "bg-white text-black hover:bg-white/80 mt-4 px-4 py-2 rounded-md";
@@ -50,9 +50,9 @@ const TransactionRemind = () => {
   }, []);
 
   return (
-    <div className="w-screen min-h-screen flex">
+    <div className="w-screen min-h-screen flex justify-between">
       <Navbar />
-      <div className="flex-1 p-4 ml-[24%] w-[75%]">
+      <div className="w-[75%] ml-[25%] homemain h-full p-6 rounded flex flex-col gap-6">
         <div className={cardClasses}>
           <h2 className="text-lg font-semibold mb-2">Transaction Reminder</h2>
           <p className="text-sm mb-4">
@@ -61,7 +61,7 @@ const TransactionRemind = () => {
           {data.length === 0 ? (
             <p className="text-gray-500">No transactions</p>
           ) : (
-            <table className="min-w-full table-auto">
+            <table className="min-w-full smallText  table-auto">
               <thead>
                 <tr>
                   <th className="text-gray-400 px-4 py-2 text-left">Date</th>
@@ -73,7 +73,7 @@ const TransactionRemind = () => {
               <tbody>
                 {data.map((e) => (
                   <tr key={e.id}>
-                    <td className=" px-4 py-2">
+                    <td className="">
                       {formatDate(e.transaction_date)}
                     </td>
                     <td className="capitalize px-4 py-2">{e.name}</td>

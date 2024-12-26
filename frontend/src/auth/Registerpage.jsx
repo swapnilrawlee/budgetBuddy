@@ -66,7 +66,7 @@ const Registerpage = () => {
       </div>
       <form
         onSubmit={submitHandler}
-        className="flex authform w-full max-w-md h-auto ml-[20%] justify-center flex-col items-center px-5 py-4 gap-4 rounded-lg backdrop-sepia-0 bg-white/90 shadow-lg"
+        className="flex authform w-full shadow-black border-2 max-w-md h-auto ml-[20%] justify-center flex-col items-center px-5 py-4 gap-4 rounded-lg backdrop-sepia-0 bg-white/90 shadow-lg"
       >
         <h1 className="text-3xl my-6">Registration</h1>
         <input

@@ -8,7 +8,7 @@ const Userprofile = () => {
   return (
     <div className='w-screen min-h-screen flex  '>
     <Navbar/>
-    <div class="  ml-[25%] w-[75%] bg-background  p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
+    <div class="marginmedia smallText  ml-[25%] w-[75%] bg-background  p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
   <h2 class="text-3xl font-bold mb-6 text-accent">Profile</h2>
 
   <div class="flex items-center space-x-4 mb-6">

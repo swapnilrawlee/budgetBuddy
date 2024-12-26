@@ -10,7 +10,7 @@ const Homepage = () => {
   const [weather, setWeather] = useState({});
   const [greet, setGreet] = useState("");
   const [hours, setHours] = useState("");
-  const [minutes, setMinutes] = useState("");
+  const [minutes, setMinutes] = useState ("");
   const [totalIncome, setTotalIncome] = useState("");
   const [totalExpense, setTotalExpense] = useState("");
   const [total, setTotal] = useState(0);
@@ -105,17 +105,17 @@ const Homepage = () => {
   return (
     <div className="w-screen min-h-screen flex justify-between">
       <Navbar />
-      <div className="w-[75%] ml-[25%] h-full p-6 rounded flex flex-col gap-6">
-        <main className="flex-1 p-8">
-          <header className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-2xl font-semibold capitalize">{`Good ${greet}, ${userdata.name}!`}</h2>
-              <p className="text-lg text-muted-foreground">
+      <div className="w-[75%] ml-[25%] homemain h-full p-6 rounded flex flex-col gap-6">
+        <main className="flex-1 ">
+          <header className="flex flexWithCol justify-between items-center mb-6">
+            <div classname="flexWithRow">
+              <h2 className="text-2xl bigText  font-semibold capitalize">{`Good ${greet}, ${userdata.name}!`}</h2>
+              <p className="text-lg  text-muted-foreground">
                 {hours}:{minutes} {hours > 12 ? "pm" : "am"}
               </p>
             </div>
-            <div className="flex items-center">
-              <span className="mr-2 text-lg">
+            <div className="flex  items-center">
+              <span className="mr-2 weather text-lg">
                 {weather?.name}, {weather?.sys?.country ?? "IN"}
               </span>
               <img
@@ -131,7 +131,7 @@ const Homepage = () => {
           <section className="mt-6">
             <div className="p-6 rounded-lg">
               <h3 className="text-xl font-semibold">Total Balance</h3>
-              <div className="flex justify-between mt-4 text-lg">
+              <div className="flex justify-between flexWithCol midText mt-4 text-lg">
                 <div className="font-medium">Total : ₹{total}</div>
                 <div className="font-medium">Expenses: ₹{totalExpense}</div>
                 <div className="font-medium">Income: ₹{totalIncome}</div>

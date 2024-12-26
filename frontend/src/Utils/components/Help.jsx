@@ -3,9 +3,9 @@ import Navbar from '../../components/Navbar'
 
 const Help = () => {
   return (
-    <div className='w-screen min-h-screen flex '>
+    <div className='w-screen min-h-screen  flex  '>
     <Navbar/>
-    <div class="bg-background  ml-[25%] w-[75%] text-black p-6 rounded-lg shadow-lg">
+    <div class="bg-background  ml-[25%] smallText marginmedia w-[75%] text-black p-6 rounded-lg shadow-lg">
   <h1 class="text-4xl font-bold mb-6 text-black">Help Center</h1>
 
   <div class="flex items-center bg-input rounded-lg p-3 mb-6 shadow">

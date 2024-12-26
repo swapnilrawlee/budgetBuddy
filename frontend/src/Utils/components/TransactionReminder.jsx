@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios';
 
-const cardClasses = "bg-black dark:bg-card-foreground mb-4 text-white dark:text-card min-w-[40vw] p-4 rounded-lg shadow-md max-w-sm mx-auto mt-8";
+const cardClasses = "bg-black flexWihCol smallText dark:bg-card-foreground mb-4 text-white dark:text-card min-w-[40vw] p-4 rounded-lg shadow-md max-w-sm mx-auto mt-8";
 const textClasses = "text-xs text-muted-foreground text-sm font-semibold";
 const buttonClasses = "bg-white text-black hover:bg-primary/80 mt-4 px-4 py-2 rounded-md";
 

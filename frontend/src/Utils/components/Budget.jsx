@@ -99,12 +99,12 @@ const Budget = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-between">
+    <div className="w-screen min-h-screen flex justify-between">
       <Navbar />
-      <div className="ml-[25%] w-[75%] h-full rounded flex border mr-3 shadow-black shadow-lg flex-col gap-6 p-6">
+      <div className="w-[75%] ml-[25%] homemain h-full p-6 rounded flex flex-col gap-6">
         <h1 className="text-4xl">Budget</h1>
         {error && <p className="text-red-500">{error}</p>}
-        <form className="flex gap-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="flex gap-4 flexWithCol" onSubmit={(e) => e.preventDefault()}>
           <div className="flex flex-col">
             <label htmlFor="category">Category:</label>
             <input
@@ -151,7 +151,7 @@ const Budget = () => {
         {loading && <p className="text-gray-500">Loading...</p>}
         <div className="mt-6">
           <h2 className="text-2xl">Transactions</h2>
-          <ul className="mt-4">
+          <ul className="mt-4 midTexts">
             {Array.isArray(transactions) && transactions.length > 0 ? (
               transactions.map((transaction) => (
                 <li

@@ -4,10 +4,10 @@ import Navbar from '../../components/Navbar'
 const Settings = () => {
   return (
 
-    <div className='w-screen min-h-screen flex  '>
+    <div className='w-screen min-h-screen flex   '>
     <Navbar/>
 
-    <div class=" ml-[25%] w-[75%] bg-background text-foreground p-4">
+    <div class=" ml-[25%] marginmedia w-[75%] bg-background smallText  text-foreground p-4">
   <h2 class="text-2xl font-bold mb-4">Settings</h2>
 
   <div class="mb-6">

@@ -3,10 +3,11 @@ import axios from "axios";
 import axiosInstance from "../Utils/axios";
 
 const cardClasses =
-  "bg-card dark:bg-card-foreground text-card-foreground dark:text-card p-4 min-w-full rounded-lg shadow-md max-w-sm mx-auto mt-8";
-const textClasses = "text-xs text-muted-foreground text-sm font-semibold";
+  "bg-card midText  dark:bg-card-foreground text-card-foreground dark:text-card p-4 min-w-full rounded-lg shadow-md max-w-sm  mt-8";
+const textClasses = "text-xs text-muted-foreground text-sm font-semibold text-red-400";
 const upcomingTransactionClasses =
-  "bg-blue-300 text-blue-900 p-4 rounded-lg shadow-md w-full mb-4 flex items-center justify-between";
+
+  " bg-black text-white   text-blue-900 p-4 rounded-lg shadow-md w-full mb-4 flex items-center justify-between";
 
 const UpcomingTransaction = () => {
   const [transactions, setTransactions] = useState([]);

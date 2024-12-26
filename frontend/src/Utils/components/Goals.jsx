@@ -76,7 +76,7 @@ const Goals = () => {
   return (
     <div className='w-screen min-h-screen flex'>
       <Navbar />
-      <div className='flex-1 p-4 ml-[24%] w-[75%]'>
+      <div className='flex-1 p-4 ml-[24%] marginmedia w-[75%]'>
         <header className="bg-secondary text-secondary p-4">
           <h1 className="text-2xl font-bold">Goals</h1>
         </header>

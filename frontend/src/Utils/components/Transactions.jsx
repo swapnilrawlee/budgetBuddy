@@ -68,7 +68,7 @@ const Transactions = () => {
   return (
     <div className="w-screen h-screen flex justify-between">
       <Navbar />
-      <div className="ml-[25%] w-[75%] h-[90%] p-6 rounded flex flex-col gap-6 mr-4 mt-6 border shadow-black shadow-lg">
+      <div className="w-[75%] ml-[25%] homemain h-full p-6 rounded flex flex-col gap-6">
         <form
           className="flex gap-2 justify-center items-center mt-6"
           onSubmit={(e) => e.preventDefault()} // Prevent page reload on form submit
@@ -92,13 +92,13 @@ const Transactions = () => {
         </form>
 
         {/* Displaying the transactions */}
-        <div className="mt-6">
+        <div className="mt-6 ">
           {transactions.length > 0 ? (
             <ul>
               {transactions.map((transaction) => (
                 <li
                   key={transaction.id}
-                  className="mb-2 text-2xl capitalize  p-2 rounded-lg flex  gap-3"
+                  className="mb-2 text-2xl midText capitalize  p-2 rounded-lg flex  gap-3"
                 >
                   <p>{transaction.category}</p>
                   <p> ₹{transaction.amount} </p>
