@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 // Configure CORS
 const corsOptions = {
   const corsOptions = {
-    origin: ['http://localhost:5173', 'https://budget-buddy-omega.vercel.app'], // List of allowed origins
+    origin: ['https://budget-buddy-omega.vercel.app'], // List of allowed origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
     credentials: true, // Include cookies in requests (if needed)
   };
