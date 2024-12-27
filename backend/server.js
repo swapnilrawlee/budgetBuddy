@@ -13,15 +13,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Configure CORS
-const corsOptions = {
+
   const corsOptions = {
     origin: ['https://budget-buddy-omega.vercel.app'], // List of allowed origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
     credentials: true, // Include cookies in requests (if needed)
   };
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods (optional)
-  credentials: true, // Include cookies in requests (if needed)
-};
+  
 
 // Use CORS middleware
 app.use(cors(corsOptions));
