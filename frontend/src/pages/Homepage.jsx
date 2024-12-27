@@ -82,7 +82,7 @@ const Homepage = () => {
         "/transactionapi/transactions/net-balance",
         { params: { user_id } }
       );
-
+      
       setNetBalance(response.data.net_balance);
     } catch (error) {
       console.error("Error fetching transaction summary:", error);
