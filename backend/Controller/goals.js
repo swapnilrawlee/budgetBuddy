@@ -11,6 +11,7 @@ module.exports.createGoal = async (req, res) => {
     priority_level,
     notes,
   } = req.body;
+  
 
   try {
     const result = await db`

@@ -12,7 +12,7 @@ const Goals = () => {
     const userId = sessionStorage.getItem('user_id');
 
     if (userId) {
-      axiosInstance.get('/goals/getgoals', {
+      axiosInstance.get('/goals/getGoals', {
         params: { user_id: userId },
       })
         .then(response => {
@@ -38,7 +38,7 @@ const Goals = () => {
 
   // Handle delete goal
   const handleDeleteGoal = (goalId) => {
-    axiosInstance.delete(`/goals/deletegoal/${goalId}`)
+    axiosInstance.delete(`/goals/deleteGoal/${goalId}`)
       .then(() => {
         setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
         if (selectedGoal && selectedGoal.id === goalId) {

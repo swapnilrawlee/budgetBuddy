@@ -17,24 +17,24 @@ const sharedClasses = {
 };
 
 const FinancialGoalForm = () => {
-  const Navigate =useNavigate()
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
-    user_id: '',
-    goal_name: '',
-    target_amount: '',
-    current_savings: '',
-    deadline: '',
-    priority_level: '',
-    notes: ''
+    user_id: "",
+    goal_name: "",
+    target_amount: "",
+    current_savings: "",
+    deadline: "",
+    priority_level: "",
+    notes: "",
   });
-  const [user_id, setUserId] = useState('');
+  const [user_id, setUserId] = useState("");
   useEffect(() => {
     // Retrieve user_id from sessionStorage
-    const storedUserId = sessionStorage.getItem('user_id');
+    const storedUserId = sessionStorage.getItem("user_id");
     setUserId(storedUserId);
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      user_id: storedUserId
+      user_id: storedUserId,
     }));
   }, []);
 
@@ -46,19 +46,19 @@ const FinancialGoalForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/goals/createGoal', { ...formData, user_id });
+      await axiosInstance.post("/goals/createGoal", { ...formData, user_id });
       setFormData({
-        user_id: '',
-        goal_name: '',
-        target_amount: '',
-        current_savings: '',
-        deadline: '',
-        priority_level: '',
-        notes: ''
+        user_id: "",
+        goal_name: "",
+        target_amount: "",
+        current_savings: "",
+        deadline: "",
+        priority_level: "",
+        notes: "",
       });
-      Navigate('/goals')
+      Navigate("/goals");
     } catch (error) {
-      console.error('There was an error creating the goal!', error);
+      console.error("There was an error creating the goal!", error);
     }
   };
 
@@ -67,11 +67,15 @@ const FinancialGoalForm = () => {
       <Navbar />
       <div className="flex-1 p-4 ml-[24%] w-[50%]">
         <div className="text-black p-6 rounded-lg shadow-lg flex flex-col gap-5">
-          <h2 className="text-2xl font-semibold mb-4">Add New Financial Goal</h2>
+          <h2 className="text-2xl font-semibold mb-4">
+            Add New Financial Goal
+          </h2>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             {/* Form fields */}
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="goalName" className="block text-sm font-medium">Goal Name</label>
+              <label htmlFor="goalName" className="block text-sm font-medium">
+                Goal Name
+              </label>
               <input
                 type="text"
                 id="goalName"
@@ -85,7 +89,12 @@ const FinancialGoalForm = () => {
             </div>
 
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="targetAmount" className="block text-sm font-medium">Target Amount</label>
+              <label
+                htmlFor="targetAmount"
+                className="block text-sm font-medium"
+              >
+                Target Amount
+              </label>
               <input
                 type="number"
                 id="targetAmount"
@@ -99,7 +108,12 @@ const FinancialGoalForm = () => {
             </div>
 
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="currentSavings" className="block text-sm font-medium">Current Savings</label>
+              <label
+                htmlFor="currentSavings"
+                className="block text-sm font-medium"
+              >
+                Current Savings
+              </label>
               <input
                 type="number"
                 id="currentSavings"
@@ -113,7 +127,9 @@ const FinancialGoalForm = () => {
             </div>
 
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="deadline" className="block text-sm font-medium">Deadline</label>
+              <label htmlFor="deadline" className="block text-sm font-medium">
+                Deadline
+              </label>
               <input
                 type="date"
                 id="deadline"
@@ -126,7 +142,12 @@ const FinancialGoalForm = () => {
             </div>
 
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="priorityLevel" className="block text-sm font-medium">Priority Level</label>
+              <label
+                htmlFor="priorityLevel"
+                className="block text-sm font-medium"
+              >
+                Priority Level
+              </label>
               <select
                 id="priorityLevel"
                 name="priority_level"
@@ -135,6 +156,9 @@ const FinancialGoalForm = () => {
                 onChange={handleChange}
                 required
               >
+                <option value="" disabled>
+                  Select the option
+                </option>
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
@@ -142,7 +166,9 @@ const FinancialGoalForm = () => {
             </div>
 
             <div className="mb-4 flex flex-col gap-5">
-              <label htmlFor="notes" className="block text-sm font-medium">Notes</label>
+              <label htmlFor="notes" className="block text-sm font-medium">
+                Notes
+              </label>
               <textarea
                 id="notes"
                 name="notes"
@@ -162,16 +188,25 @@ const FinancialGoalForm = () => {
               </button>
               <button
                 type="button"
+                className={`${sharedClasses.textDestructiveForeground} px-4 py-2 rounded-md ${sharedClasses.hoverBgDestructive}`}
+                onClick={() =>
+                  setFormData({
+                    user_id: "",
+                    goal_name: "",
+                    target_amount: "",
+                    current_savings: "",
+                    deadline: "",
+                    priority_level: "",
+                    notes: "",
+                  })
+                }
+              >
+                Reset
+              </button>
+              <button
+                type="button"
                 className={`${sharedClasses.bgDestructive} ${sharedClasses.textDestructiveForeground} px-4 py-2 rounded-md ${sharedClasses.hoverBgDestructive}`}
-                onClick={() => setFormData({
-                  user_id: '',
-                  goal_name: '',
-                  target_amount: '',
-                  current_savings: '',
-                  deadline: '',
-                  priority_level: '',
-                  notes: ''
-                })}
+                onClick={() => Navigate("/goals")}
               >
                 Cancel
               </button>

@@ -51,7 +51,7 @@ const Reports = () => {
   const fetchChartData = async () => {
     try {
       const user_id = sessionStorage.getItem('user_id');
-      const response = await axiosInstance.get('/transactionapi/transactions/chart-data', {
+      const response = await axiosInstance.get('/report/transactions/chart-data', {
         params: { user_id }
       });
       setChartData(response.data);
@@ -63,7 +63,7 @@ const Reports = () => {
   const fetchReport = async () => {
     try {
       const user_id = sessionStorage.getItem('user_id');
-      const response = await axiosInstance.get('/transactionapi/transactions/report', {
+      const response = await axiosInstance.get('/report/transactions/report', {
         params: { user_id, ...filters }
       });
       setReport(response.data);
@@ -75,7 +75,7 @@ const Reports = () => {
   const handleExport = async (format) => {
     try {
       const user_id = sessionStorage.getItem('user_id');
-      const url = `/transactionapi/transactions/export/${format}`;
+      const url = `/report/transactions/export/${format}`;
       const response = await axiosInstance.get(url, { params: { user_id }, responseType: 'blob' });
       
       const blob = new Blob([response.data], { type: format === 'pdf' ? 'application/pdf' : 'text/csv' });
