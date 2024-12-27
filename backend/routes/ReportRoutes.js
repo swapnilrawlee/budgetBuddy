@@ -45,31 +45,7 @@ router.get("/transactions/chart-data", async (req, res) => {
   });
   
   // Delete a transaction by ID
-  router.delete("/transactions/:id", async (req, res) => {
-    const { id } = req.params;
-    const user_id = req.query.user_id;
-  
-    if (!user_id) {
-      return res.status(400).send({ error: "User ID is required." });
-    }
-  
-    try {
-      const result = await db`
-        SELECT * FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
-  
-      if (result.length === 0) {
-        return res
-          .status(404)
-          .send({ error: "Transaction not found or unauthorized." });
-      }
-  
-      await db`DELETE FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
-      res.send({ message: "Transaction deleted" });
-    } catch (error) {
-      console.error("Error deleting transaction:", error);
-      res.status(500).send({ error: "Error deleting transaction." });
-    }
-  });
+
   // Filter Transactions
   router.get("/transactions/filter", async (req, res) => {
     const { user_id, category, type } = req.query;

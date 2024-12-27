@@ -12,15 +12,9 @@ const ReportRoutes = require("./routes/ReportRoutes");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Configure CORS
-
-  const corsOptions = {
-    origin: ['https://budget-buddy-omega.vercel.app'], // List of allowed origins
-  };
-  
 
 // Use CORS middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(cookieParser());
 
 

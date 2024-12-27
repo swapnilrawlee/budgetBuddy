@@ -20,7 +20,31 @@ router.get("/transactions", async (req, res) => {
     res.status(500).send({ error: "Error fetching transactions." });
   }
 });
+router.delete("/transactions/:id", async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.query.user_id;
 
+  if (!user_id) {
+    return res.status(400).send({ error: "User ID is required." });
+  }
+
+  try {
+    const result = await db`
+      SELECT * FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .send({ error: "Transaction not found or unauthorized." });
+    }
+
+    await db`DELETE FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
+    res.send({ message: "Transaction deleted" });
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    res.status(500).send({ error: "Error deleting transaction." });
+  }
+});
 // Get the 3 most recent transactions for a specific user
 router.get("/recenttransactions", async (req, res) => {
   const user_id = req.query.user_id;
