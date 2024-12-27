@@ -46,7 +46,7 @@ const FinancialGoalForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/goals/creategoal', { ...formData, user_id });
+      await axiosInstance.post('/goals/createGoal', { ...formData, user_id });
       setFormData({
         user_id: '',
         goal_name: '',

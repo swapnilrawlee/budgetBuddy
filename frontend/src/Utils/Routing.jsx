@@ -35,7 +35,6 @@ const Routing = () => {
       <Route path="/help" element={<Helppage/>} />
       <Route path="/userprofile" element={<Userprofile/>} />
       <Route path="/newgoal" element={<FinancialGoalForm/>} />
-      <Route path="/newgoal" element={<FinancialGoalForm/>} />
       <Route path="*" element={<Error404page />} />
     </Routes>
     </UserContext.Provider>

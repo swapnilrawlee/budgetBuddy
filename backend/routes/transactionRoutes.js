@@ -224,4 +224,93 @@ router.delete("/transactions/:id", async (req, res) => {
   }
 });
 
+router.get('/transactions/filter', async (req, res) => {
+  const { user_id, category, type } = req.query;
+
+  try {
+      const result = await db.query(
+          `SELECT * FROM transactions WHERE user_id = $1 AND category = $2 AND type = $3 ORDER BY date DESC`,
+          [user_id, category, type]
+      );
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching filtered transactions:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+// Export transactions as CSV
+router.get('/transactions/export/csv', async (req, res) => {
+  const { user_id } = req.query;
+
+  try {
+      const result = await db.query(
+          `SELECT date, category, amount, type FROM transactions WHERE user_id = $1`,
+          [user_id]
+      );
+
+      const csv = parse(result.rows);
+      const filePath = path.join(__dirname, '../exports/transactions.csv');
+      fs.writeFileSync(filePath, csv);
+
+      res.download(filePath);
+  } catch (error) {
+      console.error('Error exporting transactions as CSV:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+// Export transactions as PDF
+router.get('/transactions/export/pdf', async (req, res) => {
+  const { user_id } = req.query;
+
+  try {
+      const result = await db.query(
+          `SELECT date, category, amount, type FROM transactions WHERE user_id = $1`,
+          [user_id]
+      );
+
+      const doc = new PDFDocument();
+      const filePath = path.join(__dirname, '../exports/transactions.pdf');
+      doc.pipe(fs.createWriteStream(filePath));
+
+      doc.fontSize(18).text('Transaction Report', { align: 'center' });
+      doc.moveDown();
+
+      result.rows.forEach((row) => {
+          doc.fontSize(12).text(
+              `Date: ${row.date}, Category: ${row.category}, Amount: ₹${row.amount}, Type: ${row.type}`
+          );
+      });
+
+      doc.end();
+
+      res.download(filePath);
+  } catch (error) {
+      console.error('Error exporting transactions as PDF:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+// Fetch detailed report
+router.get('/transactions/report', async (req, res) => {
+  const { user_id } = req.query;
+
+  try {
+      const result = await db.query(
+          `SELECT date, category, SUM(amount) as amount
+           FROM transactions
+           WHERE user_id = $1
+           GROUP BY date, category
+           ORDER BY date DESC`,
+          [user_id]
+      );
+
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching detailed reports:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 module.exports = router;
