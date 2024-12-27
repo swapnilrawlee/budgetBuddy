@@ -62,7 +62,6 @@ const Homepage = () => {
 
   const handletotal = async () => {
     try {
-      sessionStorage.getItem("user_id")
       const user_id = sessionStorage.getItem("user_id");
       const response = await axiosInstance.get(
         "/transactionapi//transactions/total",
