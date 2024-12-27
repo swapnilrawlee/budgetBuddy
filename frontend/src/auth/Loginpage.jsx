@@ -38,7 +38,7 @@ const Loginpage = () => {
       });
       if (response.status === 200) {
         setUserdata(response.data.user);
-        sessionStorage.setItem("user_id", response.data.user.id);
+        localStorage.setItem("user_id", response.data.user.id);
         // console.log(response)
         Navigate("/home");
       } else {
