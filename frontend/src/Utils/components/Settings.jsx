@@ -29,13 +29,7 @@ const Settings = () => {
     </label>
   </div>
 
-  <div class="mb-6">
-    <h3 class="text-lg font-semibold mb-2">Theme Settings</h3>
-    <select class="input-field">
-      <option value="light">Light Theme</option>
-      <option value="dark">Dark Theme</option>
-    </select>
-  </div>
+
 
   <div class="mb-6">
     <h3 class="text-lg font-semibold mb-2">Privacy Settings</h3>
