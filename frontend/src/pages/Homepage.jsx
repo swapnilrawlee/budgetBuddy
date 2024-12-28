@@ -49,7 +49,7 @@ const Homepage = () => {
   };
 
   const handletransaction = async () => {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = sessionStorage.getItem("user_id");
 
     const response = await axiosInstance.get(
       "/transactionapi/transactions/summary",
@@ -62,7 +62,7 @@ const Homepage = () => {
 
   const handletotal = async () => {
     try {
-      const user_id = localStorage.getItem("user_id");
+      const user_id = sessionStorage.getItem("user_id");
       const response = await axiosInstance.get(
         "/transactionapi//transactions/total",
         { params: { user_id } }
@@ -76,7 +76,7 @@ const Homepage = () => {
   };
   const handlenetbalance = async () => {
     try {
-      const user_id = localStorage.getItem("user_id");
+      const user_id = sessionStorage.getItem("user_id");
 
       const response = await axiosInstance.get(
         "/transactionapi/transactions/net-balance",
