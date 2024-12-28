@@ -64,9 +64,19 @@ router.get('/upcoming', async (req, res) => {
   }
 
   try {
+    // Delete transactions where the date has passed
+    await db`
+      DELETE FROM reminders 
+      WHERE user_id = ${user_id} 
+      AND transaction_date < CURRENT_DATE`;
+
     // Query to fetch the upcoming three transactions
     const result = await db`
-      SELECT * FROM reminders WHERE user_id = ${user_id} AND transaction_date >= CURRENT_DATE ORDER BY transaction_date ASC LIMIT 3`;
+      SELECT * FROM reminders 
+      WHERE user_id = ${user_id} 
+      AND transaction_date >= CURRENT_DATE 
+      ORDER BY transaction_date ASC 
+      LIMIT 3`;
 
     if (result.length === 0) {
       return res.status(404).json({ message: 'No upcoming transactions found' });
@@ -78,6 +88,7 @@ router.get('/upcoming', async (req, res) => {
     res.status(500).json({ message: 'An error occurred while fetching transactions.' });
   }
 });
+
 
 // DELETE /:id - Delete a reminder by ID
 router.delete('/:id', async (req, res) => {
