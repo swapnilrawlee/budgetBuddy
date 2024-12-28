@@ -26,7 +26,6 @@ const TransactionRemind = () => {
       // console.log(response.data);
     } catch (error) {
       console.error("Error fetching reminders:", error);
-      alert("An error occurred while fetching reminders.");
     }
   };
 
@@ -36,7 +35,6 @@ const TransactionRemind = () => {
       setData(data.filter((reminder) => reminder.id !== id));
     } catch (error) {
       console.error("Error deleting reminder:", error);
-      alert("An error occurred while deleting the reminder.");
     }
   };
 

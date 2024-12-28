@@ -26,7 +26,6 @@ const TransactionReminder = () => {
         })
         .catch(error => {
             console.error('Error setting reminder:', error);
-            alert('An error occurred while setting the reminder.');
         });
     };
 

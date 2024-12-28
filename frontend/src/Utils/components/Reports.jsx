@@ -59,6 +59,7 @@ const Reports = () => {
       console.error('Error fetching chart data:', error);
     }
   };
+  console.log(report)
 
   const fetchReport = async () => {
     try {
@@ -75,9 +76,16 @@ const Reports = () => {
   const handleExport = async (format) => {
     try {
       const user_id = sessionStorage.getItem('user_id');
-      const url = `/report/transactions/export/${format}`;
-      const response = await axiosInstance.get(url, { params: { user_id }, responseType: 'blob' });
+      if (!user_id) {
+        throw new Error('User ID is not available');
+      }
       
+      const url = `/report/transactions/export/${format}`;
+      const response = await axiosInstance.get(url, { 
+        params: { user_id },
+        responseType: 'blob' 
+      });
+  
       const blob = new Blob([response.data], { type: format === 'pdf' ? 'application/pdf' : 'text/csv' });
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -88,6 +96,7 @@ const Reports = () => {
       console.error(`Error exporting transactions as ${format.toUpperCase()}:`, error);
     }
   };
+  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -169,7 +178,8 @@ const Reports = () => {
             <tbody>
               {report.map((elem, index) => (
                 <tr key={index} className="hover:bg-muted">
-                  <td className="p-2 border-b">{elem.date}</td>
+                  <td className="p-2 border-b">      {new Date(elem.created_at).toLocaleDateString()}
+                  </td>
                   <td className="p-2 border-b">{elem.category}</td>
                   <td className="p-2 border-b">₹{elem.amount}</td>
                 </tr>

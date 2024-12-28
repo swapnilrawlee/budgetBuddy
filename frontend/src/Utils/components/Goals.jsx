@@ -29,7 +29,6 @@ const Goals = () => {
         })
         .catch(error => {
           console.error('Error fetching goals:', error);
-          alert('An error occurred while fetching your goals.');
         });
     } else {
       console.error('No user_id found in sessionStorage');
@@ -47,7 +46,6 @@ const Goals = () => {
       })
       .catch(error => {
         console.error('Error deleting goal:', error);
-        alert('An error occurred while deleting the goal.');
       });
   };
 

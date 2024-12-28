@@ -98,7 +98,7 @@ const Transactions = () => {
               {transactions.map((transaction) => (
                 <li
                   key={transaction.id}
-                  className="mb-2 text-2xl midText capitalize  p-2 rounded-lg flex  gap-3"
+                  className="mb-2 text-l midText capitalize  p-2 rounded-lg flex  gap-3"
                 >
                   <p>{transaction.category}</p>
                   <p> ₹{transaction.amount} </p>
@@ -115,7 +115,7 @@ const Transactions = () => {
               ))}
             </ul>
           ) : (
-            <p>No transactions found.</p>
+            <p className="text-gray-400 text-center capitalize ">No transactions found.</p>
           )}
         </div>
       </div>
