@@ -39,6 +39,7 @@ const Loginpage = () => {
       if (response.status === 200) {
         setUserdata(response.data.user);
         sessionStorage.setItem("user_id", response.data.user.id);
+      sessionStorage.setItem("user_name", response.data.user.name);
         // console.log(response)
         Navigate("/home");
       } else {

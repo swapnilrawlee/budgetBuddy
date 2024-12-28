@@ -88,6 +88,7 @@ const Homepage = () => {
       console.error("Error fetching transaction summary:", error);
     }
   };
+  const userName = sessionStorage.getItem("user_name");
 
   useEffect(() => {
     handleClick();
@@ -108,7 +109,7 @@ const Homepage = () => {
         <main className="flex-1 ">
           <header className="flex flexWithCol justify-between items-center mb-6">
             <div classname="flexWithRow">
-              <h2 className="text-2xl bigText  font-semibold capitalize">{`Good ${greet}, ${userdata.name}!`}</h2>
+              <h2 className="text-2xl bigText  font-semibold capitalize">{`Good ${greet}, ${userName}!`}</h2>
               <p className="text-lg  text-muted-foreground">
                 {hours}:{minutes} {hours > 12 ? "pm" : "am"}
               </p>
