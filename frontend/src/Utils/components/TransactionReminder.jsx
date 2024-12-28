@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Ensure axios is imported
 import Navbar from '../../components/Navbar';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios';
 
 const cardClasses = "bg-black flexWihCol smallText dark:bg-card-foreground mb-4 text-white dark:text-card min-w-[40vw] p-4 rounded-lg shadow-md max-w-sm mx-auto mt-8";
@@ -13,20 +13,21 @@ const TransactionReminder = () => {
     const [transactionDate, setTransactionDate] = useState('');
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
-    const Navigate = useNavigate()
-    
+    const navigate = useNavigate();
+
+    // Get today's date in 'YYYY-MM-DD' format
+    const today = new Date().toISOString().split('T')[0];
 
     const handleTransactionReminder = () => {
         const user_id = sessionStorage.getItem('user_id');
 
-
-        axiosInstance.post('/reminders', {transactionDate,name,amount, user_id})
-        .then(response => {
-            Navigate('/transactionremind')
-        })
-        .catch(error => {
-            console.error('Error setting reminder:', error);
-        });
+        axiosInstance.post('/reminders', { transactionDate, name, amount, user_id })
+            .then(response => {
+                navigate('/transactionremind');
+            })
+            .catch(error => {
+                console.error('Error setting reminder:', error);
+            });
     };
 
     return (
@@ -42,6 +43,7 @@ const TransactionReminder = () => {
                             type="date"
                             value={transactionDate}
                             onChange={(e) => setTransactionDate(e.target.value)}
+                            min={today} // Set the min date to today's date
                             className="border border-gray-300 p-2 text-black rounded-md w-full"
                         />
                     </div>
@@ -50,7 +52,7 @@ const TransactionReminder = () => {
                         <input
                             type="text"
                             value={name}
-                            maxLength="20" 
+                            maxLength="20"
                             placeholder='Name should not exceed 20 characters'
                             onChange={(e) => setName(e.target.value)}
                             className="border border-gray-300 p-2 text-black rounded-md w-full"
@@ -60,15 +62,15 @@ const TransactionReminder = () => {
                         <label className="block text-xs text-slate-300 mb-4">Amount</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="100"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             className="border border-gray-300 p-2 text-black rounded-md w-full"
                         />
                     </div>
 
-                    <button 
-                        className={buttonClasses} 
+                    <button
+                        className={buttonClasses}
                         onClick={handleTransactionReminder}
                     >
                         Set Reminder
