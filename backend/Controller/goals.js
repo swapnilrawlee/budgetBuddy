@@ -1,4 +1,4 @@
-const db = require("../config/postgres");
+const db = require("../config/database");
 
 // Handler for creating a goal
 module.exports.createGoal = async (req, res) => {
@@ -11,18 +11,15 @@ module.exports.createGoal = async (req, res) => {
     priority_level,
     notes,
   } = req.body;
-  
 
   try {
-    const result = await db`
-      INSERT INTO goals 
-      (user_id, goal_name, target_amount, current_savings, deadline, priority_level, notes)
-      VALUES (${user_id}, ${goal_name}, ${target_amount}, ${current_savings}, ${deadline}, ${priority_level}, ${notes})
-      RETURNING id
-    `;
+    const [result] = await db.query(
+      "INSERT INTO goals (user_id, goal_name, target_amount, current_savings, deadline, priority_level, notes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [user_id, goal_name, target_amount, current_savings, deadline, priority_level, notes]
+    );
     res
       .status(201)
-      .json({ message: "Goal created successfully!", goalId: result[0].id });
+      .json({ message: "Goal created successfully!", goalId: result.insertId });
   } catch (err) {
     console.error("Error creating goal:", err);
     res.status(500).json({ error: "An error occurred while creating the goal." });
@@ -34,9 +31,7 @@ module.exports.getGoals = async (req, res) => {
   const userId = req.query.user_id;
 
   try {
-    const results = await db`
-      SELECT * FROM goals WHERE user_id = ${userId}
-    `;
+    const [results] = await db.query("SELECT * FROM goals WHERE user_id = ?", [userId]);
     if (results.length === 0) {
       return res.status(404).json({ message: "No goals found for this user." });
     }
@@ -52,10 +47,8 @@ module.exports.deleteGoal = async (req, res) => {
   const goalId = req.params.goalId;
 
   try {
-    const result = await db`
-      DELETE FROM goals WHERE id = ${goalId}
-    `;
-    if (result.rowCount === 0) {
+    const [result] = await db.query("DELETE FROM goals WHERE id = ?", [goalId]);
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Goal not found" });
     }
     res.status(200).json({ message: "Goal deleted successfully" });

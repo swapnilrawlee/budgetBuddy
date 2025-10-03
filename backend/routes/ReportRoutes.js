@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/postgres");
+const db = require("../config/database");
 const fs = require("fs");
 const path = require("path");
 const { parse } = require("json2csv");
@@ -9,21 +9,15 @@ const PDFDocument = require("pdfkit");
 // Get transaction chart data (expenses vs income over time)
 router.get("/transactions/chart-data", async (req, res) => {
   try {
-    const expensesResult = await db`
-      SELECT DATE(created_at) as date, SUM(amount) as total
-      FROM transactions
-      WHERE type = 'expense'
-      GROUP BY DATE(created_at)
-      ORDER BY DATE(created_at)
-    `;
+    const [expensesResult] = await db.query(
+      "SELECT DATE(created_at) as date, SUM(amount) as total FROM transactions WHERE type = ? GROUP BY DATE(created_at) ORDER BY DATE(created_at)",
+      ["expense"]
+    );
 
-    const incomeResult = await db`
-      SELECT DATE(created_at) as date, SUM(amount) as total
-      FROM transactions
-      WHERE type = 'income'
-      GROUP BY DATE(created_at)
-      ORDER BY DATE(created_at)
-    `;
+    const [incomeResult] = await db.query(
+      "SELECT DATE(created_at) as date, SUM(amount) as total FROM transactions WHERE type = ? GROUP BY DATE(created_at) ORDER BY DATE(created_at)",
+      ["income"]
+    );
 
     const labels = Array.from(
       new Set([
@@ -57,25 +51,24 @@ router.get("/transactions/filter", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT * FROM transactions 
-      WHERE user_id = ${user_id} 
-      AND category = ${category} 
-      AND type = ${type}
-      ORDER BY created_at DESC
-    `;
+    const [result] = await db.query(
+      "SELECT * FROM transactions WHERE user_id = ? AND category = ? AND type = ? ORDER BY created_at DESC",
+      [user_id, category, type]
+    );
     res.json(result);
   } catch (error) {
     console.error("Error fetching filtered transactions:", error);
     res.status(500).send("Internal Server Error");
   }
 });
+
 const exportsDir = path.join(__dirname, "../exports");
 
 // Ensure the exports directory exists
 if (!fs.existsSync(exportsDir)) {
   fs.mkdirSync(exportsDir, { recursive: true });
 }
+
 // Export Transactions as CSV
 router.get("/transactions/export/csv", async (req, res) => {
   const { user_id } = req.query;
@@ -84,11 +77,10 @@ router.get("/transactions/export/csv", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT created_at, category, amount, type 
-      FROM transactions 
-      WHERE user_id = ${user_id}
-    `;
+    const [result] = await db.query(
+      "SELECT created_at, category, amount, type FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
 
     const csv = parse(result);
     const timestamp = Date.now();
@@ -118,12 +110,11 @@ router.get("/transactions/export/pdf", async (req, res) => {
 
   try {
     // Fetch transaction data
-    const result = await db`
-      SELECT created_at, category, amount, type 
-      FROM transactions 
-      WHERE user_id = ${user_id}
-    `;
-    
+    const [result] = await db.query(
+      "SELECT created_at, category, amount, type FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
+
     if (!result || result.length === 0) {
       return res.status(404).send("No transactions found for the given user.");
     }
@@ -143,7 +134,7 @@ router.get("/transactions/export/pdf", async (req, res) => {
       const formattedDate = new Date(row.created_at).toLocaleDateString('en-GB'); // 'en-GB' for DD/MM/YYYY format
       doc.fontSize(12).text(`Date: ${formattedDate}, Category: ${row.category}, Amount: ₹${row.amount}, Type: ${row.type}`);
     });
-    
+
     doc.end();
 
     writeStream.on('finish', () => {
@@ -152,20 +143,14 @@ router.get("/transactions/export/pdf", async (req, res) => {
         if (err) {
           console.error("Error sending file:", err);
         }
+        fs.unlinkSync(filePath); // Clean up file
       });
     });
-
   } catch (error) {
     console.error("Error exporting transactions as PDF:", error);
     res.status(500).send("Internal Server Error");
-  } finally {
-    // Ensure file cleanup, even if an error occurs
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
   }
 });
-
 
 // Fetch Detailed Report
 router.get("/transactions/report", async (req, res) => {
@@ -175,14 +160,11 @@ router.get("/transactions/report", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT created_at, category, SUM(amount) as amount 
-      FROM transactions 
-      WHERE user_id = ${user_id} 
-      GROUP BY created_at, category 
-      ORDER BY created_at DESC
-    `;
-    console.log(result)
+    const [result] = await db.query(
+      "SELECT created_at, category, SUM(amount) as amount FROM transactions WHERE user_id = ? GROUP BY created_at, category ORDER BY created_at DESC",
+      [user_id]
+    );
+    console.log(result);
     res.json(result);
   } catch (error) {
     console.error("Error fetching detailed reports:", error);

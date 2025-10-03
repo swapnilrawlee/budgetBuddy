@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/postgres"); // Assuming db is the PostgreSQL connection instance
+const db = require("../config/database");
 
 // Get all transactions for a specific user
 router.get("/transactions", async (req, res) => {
@@ -11,15 +11,19 @@ router.get("/transactions", async (req, res) => {
   }
 
   try {
-    const result =
-      await db`SELECT * FROM transactions WHERE user_id = ${user_id}`;
+    const [result] = await db.query(
+      "SELECT * FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
     console.log(result);
-    res.send(result); // Access PostgreSQL query result via `rows`
+    res.send(result);
   } catch (error) {
-    console.error("Error fetching transactions:", error); // Log the error for debugging
+    console.error("Error fetching transactions:", error);
     res.status(500).send({ error: "Error fetching transactions." });
   }
 });
+
+// Delete a transaction by ID
 router.delete("/transactions/:id", async (req, res) => {
   const { id } = req.params;
   const user_id = req.query.user_id;
@@ -29,22 +33,28 @@ router.delete("/transactions/:id", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT * FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
+    const [checkResult] = await db.query(
+      "SELECT * FROM transactions WHERE id = ? AND user_id = ?",
+      [id, user_id]
+    );
 
-    if (result.length === 0) {
+    if (checkResult.length === 0) {
       return res
         .status(404)
         .send({ error: "Transaction not found or unauthorized." });
     }
 
-    await db`DELETE FROM transactions WHERE id = ${id} AND user_id = ${user_id}`;
+    await db.query(
+      "DELETE FROM transactions WHERE id = ? AND user_id = ?",
+      [id, user_id]
+    );
     res.send({ message: "Transaction deleted" });
   } catch (error) {
     console.error("Error deleting transaction:", error);
     res.status(500).send({ error: "Error deleting transaction." });
   }
 });
+
 // Get the 3 most recent transactions for a specific user
 router.get("/recenttransactions", async (req, res) => {
   const user_id = req.query.user_id;
@@ -54,8 +64,10 @@ router.get("/recenttransactions", async (req, res) => {
   }
 
   try {
-    const result =
-      await db`SELECT * FROM transactions WHERE user_id = ${user_id} ORDER BY created_at DESC LIMIT 3`;
+    const [result] = await db.query(
+      "SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 3",
+      [user_id]
+    );
     res.send(result);
   } catch (error) {
     console.error("Error fetching recent transactions:", error);
@@ -72,14 +84,13 @@ router.get("/transactions/summary", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT 
-        SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income,
-        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expenses
-      FROM transactions
-      WHERE user_id = ${user_id}
-    `;
-    res.send(result[0]); // Access PostgreSQL query result via `rows`
+    const [result] = await db.query(
+      "SELECT SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income, " +
+      "SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expenses " +
+      "FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
+    res.send(result[0]);
   } catch (error) {
     console.error("Error calculating totals:", error);
     res.status(500).send({ error: "Error calculating totals." });
@@ -95,14 +106,13 @@ router.get("/transactions/total", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT SUM(amount) AS total 
-      FROM transactions 
-      WHERE user_id = ${user_id}
-    `;
+    const [result] = await db.query(
+      "SELECT SUM(amount) AS total FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
 
-    if (result.length > 0) {
-      res.send(result[0]); // Directly access the first row of the result
+    if (result[0].total !== null) {
+      res.send(result[0]);
     } else {
       res
         .status(404)
@@ -113,6 +123,7 @@ router.get("/transactions/total", async (req, res) => {
     res.status(500).send({ error: "Error calculating total amount." });
   }
 });
+
 // Get net balance for a user (income - expenses)
 router.get("/transactions/net-balance", async (req, res) => {
   const user_id = req.query.user_id;
@@ -122,16 +133,15 @@ router.get("/transactions/net-balance", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      SELECT 
-        SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) - 
-        SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS net_balance
-      FROM transactions
-      WHERE user_id = ${user_id}
-    `;
+    const [result] = await db.query(
+      "SELECT SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) - " +
+      "SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS net_balance " +
+      "FROM transactions WHERE user_id = ?",
+      [user_id]
+    );
 
-    if (result.length > 0) {
-      res.send(result[0]); // Access the result directly
+    if (result[0].net_balance !== null) {
+      res.send(result[0]);
     } else {
       res
         .status(404)
@@ -158,11 +168,13 @@ router.post("/transactions", async (req, res) => {
   }
 
   try {
-    const result = await db`
-      INSERT INTO transactions (category, amount, type, user_id) VALUES (${category}, ${amount}, ${type}, ${user_id}) RETURNING id`;
+    const [result] = await db.query(
+      "INSERT INTO transactions (category, amount, type, user_id) VALUES (?, ?, ?, ?)",
+      [category, amount, type, user_id]
+    );
 
     const newTransaction = {
-      id: result[0].id,
+      id: result.insertId,
       category,
       amount,
       type,
@@ -174,9 +186,8 @@ router.post("/transactions", async (req, res) => {
     console.error("Error adding transaction:", error);
     res
       .status(500)
-      .send({ error: "Error adding transaction.", details: error });
+      .send({ error: "Error adding transaction.", details: error.message });
   }
 });
-
 
 module.exports = router;

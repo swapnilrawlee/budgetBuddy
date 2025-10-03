@@ -1,10 +1,11 @@
 const excel = require('exceljs');
+const db = require("../config/database");
 
 router.get('/transactions/export', async (req, res) => {
     try {
-        const [transactions] = await promisePool.query(
+        const [transactions] = await db.query(
             'SELECT category, amount, type, created_at FROM transactions WHERE user_id = ?',
-            [req.body.user_id]
+            [req.query.user_id]
         );
 
         const workbook = new excel.Workbook();

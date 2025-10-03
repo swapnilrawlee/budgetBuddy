@@ -1,7 +1,8 @@
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 
-const db = require("../config/postgres")
+const db = require("../config/database");
+
 // Register function
 module.exports.register = async function (req, res) {
   const { name, email, password } = req.body;
@@ -12,9 +13,9 @@ module.exports.register = async function (req, res) {
 
   try {
     // Check if the email already exists in the database
-    const result = await db`SELECT * FROM users WHERE email = ${email}`;
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
 
-    if (result.length > 0) {
+    if (rows.length > 0) {
       return res.status(400).json({ msg: "Email already exists" });
     }
 
@@ -22,7 +23,7 @@ module.exports.register = async function (req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert the user into the database
-    await db`INSERT INTO users ("name", "email", "password") VALUES (${name}, ${email}, ${hashedPassword})`;
+    await db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hashedPassword]);
 
     res.status(200).json({ msg: "User registered successfully" });
   } catch (error) {
@@ -41,13 +42,13 @@ module.exports.login = async function (req, res) {
 
   try {
     // Find the user by email
-    const result = await db`SELECT * FROM users WHERE email = ${email}`;
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
 
-    if (result.length === 0) {
+    if (rows.length === 0) {
       return res.status(400).json({ msg: "Invalid email or password" });
     }
 
-    const user = result[0];
+    const user = rows[0];
 
     // Compare the provided password with the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, user.password);

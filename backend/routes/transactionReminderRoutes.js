@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require("../config/postgres"); // Assuming db is the PostgreSQL connection instance
+const db = require("../config/database");
 
 // POST / - Add a new reminder
 router.post('/', async (req, res) => {
@@ -21,20 +21,17 @@ router.post('/', async (req, res) => {
     }
 
     // Insert into the database
-    const result = await db`
-      INSERT INTO reminders (user_id, transaction_date, name, amount)
-      VALUES (${user_id}, ${transactionDate}, ${name}, ${amount})
-      RETURNING id
-    `;
+    const [result] = await db.query(
+      'INSERT INTO reminders (user_id, transaction_date, name, amount) VALUES (?, ?, ?, ?)',
+      [user_id, transactionDate, name, amount]
+    );
 
-    res.status(201).json({ message: 'Reminder added successfully', id: result[0].id });
+    res.status(201).json({ message: 'Reminder added successfully', id: result.insertId });
   } catch (error) {
     console.error('Error adding reminder:', error);
     res.status(500).json({ error: 'An error occurred while adding the reminder.' });
   }
 });
-
-
 
 // GET / - Fetch all reminders for a user
 router.get('/', async (req, res) => {
@@ -46,7 +43,7 @@ router.get('/', async (req, res) => {
     }
 
     // Fetch reminders for the given user_id
-    const result = await db`SELECT * FROM reminders WHERE user_id = ${user_id}`;
+    const [result] = await db.query('SELECT * FROM reminders WHERE user_id = ?', [user_id]);
 
     res.status(200).json(result);
   } catch (error) {
@@ -65,18 +62,16 @@ router.get('/upcoming', async (req, res) => {
 
   try {
     // Delete transactions where the date has passed
-    await db`
-      DELETE FROM reminders 
-      WHERE user_id = ${user_id} 
-      AND transaction_date < CURRENT_DATE`;
+    await db.query(
+      'DELETE FROM reminders WHERE user_id = ? AND transaction_date < CURDATE()',
+      [user_id]
+    );
 
     // Query to fetch the upcoming three transactions
-    const result = await db`
-      SELECT * FROM reminders 
-      WHERE user_id = ${user_id} 
-      AND transaction_date >= CURRENT_DATE 
-      ORDER BY transaction_date ASC 
-      LIMIT 3`;
+    const [result] = await db.query(
+      'SELECT * FROM reminders WHERE user_id = ? AND transaction_date >= CURDATE() ORDER BY transaction_date ASC LIMIT 3',
+      [user_id]
+    );
 
     if (result.length === 0) {
       return res.status(404).json({ message: 'No upcoming transactions found' });
@@ -89,14 +84,17 @@ router.get('/upcoming', async (req, res) => {
   }
 });
 
-
 // DELETE /:id - Delete a reminder by ID
 router.delete('/:id', async (req, res) => {
   try {
     const reminderId = req.params.id;
 
     // Delete the reminder
-    await db`DELETE FROM reminders WHERE id = ${reminderId}`;
+    const [result] = await db.query('DELETE FROM reminders WHERE id = ?', [reminderId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Reminder not found' });
+    }
 
     res.status(200).json({ message: 'Reminder deleted successfully.' });
   } catch (error) {
